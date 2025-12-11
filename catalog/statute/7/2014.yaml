@@ -1,0 +1,10 @@
+# 7 USC § 2014 - Eligible Households
+
+path: us/statute/7/2014.xml
+format: uslm
+title: "7 USC § 2014 - Eligible Households"
+sections:
+  - "2014(c)" # Income eligibility
+  - "2014(e)" # Deductions from income
+  - "2014(g)" # Resources
+archived: 2025-12-11

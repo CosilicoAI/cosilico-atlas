@@ -1,0 +1,99 @@
+# Source Document Organization
+
+## Core Principle
+
+**Everything is organized by source document type.**
+
+- Statute documents → `catalog/statute/` and `us/statute/` in R2
+- Guidance documents → `catalog/guidance/` and `us/guidance/` in R2
+
+Never mix document types. A guidance document (IRS Rev. Proc., USDA COLA memo) never lives in the statute path.
+
+## Repo Separation
+
+| Repo | Purpose |
+|------|---------|
+| **cosilico-lawarchive** | Archive tooling + document catalog (this repo) |
+| **cosilico-us** | Executable encodings (.cosilico formulas, parameters.yaml, tests.yaml) |
+
+## Lawarchive Structure
+
+```
+cosilico-lawarchive/
+├── catalog/                      # What's in R2
+│   ├── statute/
+│   │   ├── 26/63.yaml           # Metadata for us/statute/26/63.xml
+│   │   └── 7/2017.yaml
+│   └── guidance/
+│       ├── irs/rev-proc-2023-34.yaml
+│       └── usda/fns/snap-fy2024-cola.yaml
+│
+├── scripts/                      # Archive tooling
+│   └── catalog_snap.py
+│
+└── docs/                         # Documentation
+```
+
+## R2 Bucket Structure
+
+```
+cosilico-lawarchive (R2)/
+├── us/statute/
+│   ├── 26/63.xml                # USC Title 26 § 63
+│   └── 7/2017.xml               # USC Title 7 § 2017
+│
+└── us/guidance/
+    ├── irs/rev-proc-2023-34.pdf
+    └── usda/fns/snap-fy2024-cola.pdf
+```
+
+## cosilico-us Structure (Encodings)
+
+```
+cosilico-us/
+├── 26/                          # Title 26 statutes (path = citation)
+│   ├── 24/a/credit.cosilico
+│   └── 63/c/standard_deduction.cosilico
+│
+├── 7/                           # Title 7 statutes
+│   └── 2017/a/allotment.cosilico
+│
+├── irs/                         # IRS guidance encodings
+│   └── rev-proc-2023-34/
+│       └── parameters.yaml      # Inflation-adjusted values
+│
+└── usda/fns/                    # USDA guidance encodings
+    └── snap-fy2024-cola/
+        └── parameters.yaml      # COLA-adjusted values
+```
+
+## Variable Precedence Logic
+
+When a statute defines a base value but guidance provides an adjusted value:
+
+```cosilico
+references {
+  # From statute encoding
+  base_amount: statute/26/63/c/2/basic_amounts
+
+  # From guidance encoding
+  adjusted_amount: guidance/irs/rev-proc-2023-34/standard_deduction
+}
+
+variable standard_deduction {
+  formula {
+    # Use guidance value if available, else statute base
+    return adjusted_amount ?? base_amount
+  }
+}
+```
+
+## Rules
+
+1. **Catalog entries reference their source document type only**
+   - `catalog/statute/26/63.yaml` → describes `us/statute/26/63.xml`
+   - `catalog/guidance/irs/...` → describes `us/guidance/irs/...`
+
+2. **Encodings live in cosilico-us, not here**
+
+3. **Archive tooling lives in scripts/**

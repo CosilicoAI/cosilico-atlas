@@ -36,7 +36,9 @@ CREATE TABLE IF NOT EXISTS guidance_documents (
 );
 
 -- Indexes for efficient queries
-CREATE UNIQUE INDEX IF NOT EXISTS idx_guidance_doc_number
+-- Note: doc_number is NOT unique - different document types can have the same number
+-- (e.g., Notice 2024-10 and Rev. Rul. 2024-10 are different documents)
+CREATE INDEX IF NOT EXISTS idx_guidance_doc_number
     ON guidance_documents(doc_number);
 
 CREATE INDEX IF NOT EXISTS idx_guidance_doc_type

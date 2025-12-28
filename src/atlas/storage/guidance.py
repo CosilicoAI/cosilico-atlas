@@ -30,13 +30,20 @@ class GuidanceStorage:
         self.db = sqlite_utils.Database(str(self.db_path))
 
     def store_revenue_procedure(self, rev_proc: RevenueProcedure) -> None:
-        """Store a Revenue Procedure in the database."""
+        """Store a Revenue Procedure (or other guidance document) in the database."""
         # Serialize sections to JSON
         sections_json = json.dumps([self._section_to_dict(s) for s in rev_proc.sections])
 
-        # Generate ID (e.g., "rp-2023-34")
+        # Generate ID based on document type (e.g., "rp-2023-34", "rr-2023-12", "notice-2024-45")
+        prefix_map = {
+            GuidanceType.REV_PROC: "rp",
+            GuidanceType.REV_RUL: "rr",
+            GuidanceType.NOTICE: "notice",
+            GuidanceType.ANNOUNCEMENT: "announce",
+        }
         year, num = rev_proc.doc_number.split("-")
-        doc_id = f"rp-{year}-{num}"
+        prefix = prefix_map.get(rev_proc.doc_type, "doc")
+        doc_id = f"{prefix}-{year}-{num}"
 
         record = {
             "id": doc_id,

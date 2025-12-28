@@ -52,9 +52,6 @@ class SourceConfig:
     # Codes available in this jurisdiction
     codes: dict[str, str] = field(default_factory=dict)  # code_id -> code_name
 
-    # Priority codes for tax/benefits
-    priority_codes: list[str] = field(default_factory=list)
-
     # Rate limiting
     rate_limit: float = 0.5  # seconds between requests
     max_retries: int = 3

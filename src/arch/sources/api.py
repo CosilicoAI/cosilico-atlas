@@ -85,7 +85,6 @@ class NYLegislationSource(APISource):
             base_url="https://legislation.nysenate.gov/api/3",
             api_key=api_key,
             codes=self.NY_CODES,
-            priority_codes=["TAX", "SSL", "LAB", "WKC"],
             rate_limit=0.5,
         )
         super().__init__(config)

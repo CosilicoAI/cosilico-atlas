@@ -70,10 +70,6 @@ US_CODE_TITLES: dict[str, str] = {
     "54": "National Park Service and Related Programs",
 }
 
-# Priority titles for tax/benefits
-PRIORITY_TITLES = ["26", "7", "42", "38"]  # IRC, Agriculture, Public Welfare, Veterans
-
-
 def get_federal_config() -> SourceConfig:
     """Get source configuration for federal US Code."""
     return SourceConfig(
@@ -82,7 +78,6 @@ def get_federal_config() -> SourceConfig:
         source_type="uslm",
         base_url="https://uscode.house.gov",
         codes=US_CODE_TITLES,
-        priority_codes=PRIORITY_TITLES,
         rate_limit=0.2,
     )
 

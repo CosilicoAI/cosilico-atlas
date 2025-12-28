@@ -54,7 +54,6 @@ def _load_yaml_configs(sources_dir: Path | None = None) -> dict[str, SourceConfi
                 title_selector=data.get("title_selector"),
                 history_selector=data.get("history_selector"),
                 codes=data.get("codes", {}),
-                priority_codes=data.get("priority_codes", []),
                 rate_limit=data.get("rate_limit", 0.5),
                 max_retries=data.get("max_retries", 3),
                 custom_parser=data.get("custom_parser"),
@@ -116,7 +115,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "61": "Water Supply-Sanitation-Ditches",
                 "63": "Workforce Development",
             },
-            priority_codes=["57", "51", "41", "39"],
         ),
         # Pennsylvania
         "us-pa": SourceConfig(
@@ -135,7 +133,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "40": "Insurance",
                 "24": "Education",
             },
-            priority_codes=["72", "62", "43"],
         ),
         # North Carolina
         "us-nc": SourceConfig(
@@ -154,7 +151,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "96": "Employment Security",
                 "58": "Insurance",
             },
-            priority_codes=["105", "108A", "95", "96"],
         ),
         # Illinois
         "us-il": SourceConfig(
@@ -173,7 +169,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "215": "Insurance",
                 "105": "Schools",
             },
-            priority_codes=["35", "305", "820"],
         ),
         # Michigan
         "us-mi": SourceConfig(
@@ -192,7 +187,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "421": "Michigan Employment Security Act",
                 "500": "Insurance Code",
             },
-            priority_codes=["206", "400", "408", "421"],
         ),
         # Georgia
         "us-ga": SourceConfig(
@@ -210,7 +204,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "34": "Labor and Industrial Relations",
                 "33": "Insurance",
             },
-            priority_codes=["48", "49", "34"],
         ),
         # Virginia
         "us-va": SourceConfig(
@@ -229,7 +222,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "60.2": "Unemployment Compensation",
                 "38.2": "Insurance",
             },
-            priority_codes=["58.1", "63.2", "40.1", "60.2"],
         ),
         # Washington
         "us-wa": SourceConfig(
@@ -249,7 +241,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "49": "Labor Regulations",
                 "48": "Insurance",
             },
-            priority_codes=["82", "74", "50", "49"],
         ),
         # Arizona
         "us-az": SourceConfig(
@@ -267,7 +258,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "23": "Labor",
                 "20": "Insurance",
             },
-            priority_codes=["42", "46", "23"],
         ),
         # Massachusetts
         "us-ma": SourceConfig(
@@ -287,7 +277,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "149": "Labor and Industries",
                 "175": "Insurance",
             },
-            priority_codes=["62", "62C", "118", "151A", "149"],
         ),
         # Maryland
         "us-md": SourceConfig(
@@ -306,7 +295,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "le": "Labor and Employment",
                 "in": "Insurance",
             },
-            priority_codes=["tg", "tp", "hu", "le"],
         ),
         # Minnesota
         "us-mn": SourceConfig(
@@ -326,7 +314,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "177": "Hours and Wages",
                 "60A": "Insurance",
             },
-            priority_codes=["290", "290A", "256", "268", "177"],
         ),
         # Wisconsin
         "us-wi": SourceConfig(
@@ -345,7 +332,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "103": "Employment Regulations",
                 "632": "Insurance Contracts",
             },
-            priority_codes=["71", "49", "108", "103"],
         ),
         # Missouri
         "us-mo": SourceConfig(
@@ -364,7 +350,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "290": "Labor and Industrial Relations",
                 "375": "Insurance",
             },
-            priority_codes=["143", "208", "288", "290"],
         ),
         # New Jersey
         "us-nj": SourceConfig(
@@ -383,7 +368,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "34": "Labor and Industrial Relations",
                 "17": "Insurance",
             },
-            priority_codes=["54", "44", "43", "34"],
             custom_parser="arch.parsers.nj_statutes",  # Needs custom parser
         ),
         # Colorado - Official PDFs from leg.colorado.gov
@@ -403,7 +387,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "10": "Insurance",
                 "22": "Education",
             },
-            priority_codes=["39", "26", "8"],
             custom_parser="arch.parsers.co_statutes",  # Needs PDF parser
         ),
         # Indiana
@@ -422,7 +405,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "22": "Labor and Safety",
                 "27": "Insurance",
             },
-            priority_codes=["6", "12", "22"],
         ),
         # Kentucky
         "us-ky": SourceConfig(
@@ -441,7 +423,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "337": "Wages and Hours",
                 "304": "Insurance",
             },
-            priority_codes=["141", "205", "341", "337"],
         ),
         # Louisiana
         "us-la": SourceConfig(
@@ -459,7 +440,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "23": "Labor and Workers Compensation",
                 "22": "Insurance",
             },
-            priority_codes=["47", "46", "23"],
         ),
         # Oregon
         "us-or": SourceConfig(
@@ -478,7 +458,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "653": "Minimum Wages; Employment Conditions",
                 "746": "Insurance",
             },
-            priority_codes=["316", "411", "657", "653"],
         ),
         # Tennessee (via LexisNexis free access)
         "us-tn": SourceConfig(
@@ -496,7 +475,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "50": "Employer and Employee",
                 "56": "Insurance",
             },
-            priority_codes=["67", "71", "50"],
             custom_parser="arch.parsers.tn_statutes",  # Needs custom for LexisNexis
         ),
         # Connecticut
@@ -515,7 +493,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "31": "Labor",
                 "38a": "Insurance",
             },
-            priority_codes=["12", "17a", "31"],
         ),
         # Iowa
         "us-ia": SourceConfig(
@@ -534,7 +511,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "91A": "Wage Payment Collection",
                 "505": "Insurance",
             },
-            priority_codes=["422", "239B", "96", "91A"],
         ),
         # Oklahoma
         "us-ok": SourceConfig(
@@ -552,7 +528,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "40": "Labor",
                 "36": "Insurance",
             },
-            priority_codes=["68", "56", "40"],
         ),
         # South Carolina
         "us-sc": SourceConfig(
@@ -570,7 +545,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "41": "Labor and Employment",
                 "38": "Insurance",
             },
-            priority_codes=["12", "43", "41"],
         ),
         # Alabama
         "us-al": SourceConfig(
@@ -588,7 +562,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "25": "Industrial Relations and Labor",
                 "27": "Insurance",
             },
-            priority_codes=["40", "38", "25"],
         ),
         # Utah
         "us-ut": SourceConfig(
@@ -606,7 +579,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "34A": "Utah Labor Code",
                 "31A": "Insurance Code",
             },
-            priority_codes=["59", "35A", "34A"],
         ),
         # Nevada
         "us-nv": SourceConfig(
@@ -625,7 +597,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "608": "Compensation, Wages and Hours",
                 "679A": "Insurance",
             },
-            priority_codes=["360", "422", "612", "608"],
         ),
         # Arkansas
         "us-ar": SourceConfig(
@@ -643,7 +614,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "11": "Labor and Industrial Relations",
                 "23": "Insurance",
             },
-            priority_codes=["26", "20", "11"],
             custom_parser="arch.parsers.ar_statutes",
         ),
         # Kansas
@@ -662,7 +632,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "44": "Labor and Industries",
                 "40": "Insurance",
             },
-            priority_codes=["79", "39", "44"],
         ),
         # Mississippi
         "us-ms": SourceConfig(
@@ -680,7 +649,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "71": "Labor and Industries",
                 "83": "Insurance",
             },
-            priority_codes=["27", "43", "71"],
             custom_parser="arch.parsers.ms_statutes",
         ),
         # New Mexico
@@ -700,7 +668,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "50": "Employment Law",
                 "59A": "Insurance",
             },
-            priority_codes=["7", "27", "52", "50"],
         ),
         # Nebraska
         "us-ne": SourceConfig(
@@ -718,7 +685,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "48": "Labor",
                 "44": "Insurance",
             },
-            priority_codes=["77", "68", "48"],
         ),
         # West Virginia
         "us-wv": SourceConfig(
@@ -736,7 +702,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "21": "Labor",
                 "33": "Insurance",
             },
-            priority_codes=["11", "9", "21"],
         ),
         # Idaho
         "us-id": SourceConfig(
@@ -755,7 +720,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "45": "Liens and Labor",
                 "41": "Insurance",
             },
-            priority_codes=["63", "56", "72", "45"],
         ),
         # Hawaii
         "us-hi": SourceConfig(
@@ -774,7 +738,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "388": "Wages and Hours",
                 "431": "Insurance",
             },
-            priority_codes=["235", "346", "383", "388"],
         ),
         # Maine
         "us-me": SourceConfig(
@@ -792,7 +755,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "26": "Labor and Industry",
                 "24-A": "Maine Insurance Code",
             },
-            priority_codes=["36", "22", "26"],
         ),
         # New Hampshire
         "us-nh": SourceConfig(
@@ -811,7 +773,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "275": "Hours of Labor",
                 "401": "Insurance",
             },
-            priority_codes=["77", "161", "282-A", "275"],
         ),
         # Rhode Island
         "us-ri": SourceConfig(
@@ -829,7 +790,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "28": "Labor and Labor Relations",
                 "27": "Insurance",
             },
-            priority_codes=["44", "40", "28"],
         ),
         # Montana
         "us-mt": SourceConfig(
@@ -847,7 +807,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "39": "Labor",
                 "33": "Insurance",
             },
-            priority_codes=["15", "53", "39"],
         ),
         # Delaware
         "us-de": SourceConfig(
@@ -865,7 +824,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "19": "Labor",
                 "18": "Insurance",
             },
-            priority_codes=["30", "31", "19"],
         ),
         # South Dakota
         "us-sd": SourceConfig(
@@ -884,7 +842,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "60": "Labor and Employment",
                 "58": "Insurance",
             },
-            priority_codes=["10", "28", "61", "60"],
         ),
         # North Dakota
         "us-nd": SourceConfig(
@@ -903,7 +860,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "34": "Labor and Employment",
                 "26.1": "Insurance",
             },
-            priority_codes=["57", "50", "52", "34"],
         ),
         # Alaska
         "us-ak": SourceConfig(
@@ -921,7 +877,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "23": "Labor and Workers Compensation",
                 "21": "Insurance",
             },
-            priority_codes=["43", "47", "23"],
         ),
         # Vermont
         "us-vt": SourceConfig(
@@ -939,7 +894,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "21": "Labor",
                 "8": "Insurance",
             },
-            priority_codes=["32", "33", "21"],
         ),
         # Wyoming
         "us-wy": SourceConfig(
@@ -957,7 +911,6 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "27": "Labor and Employment",
                 "26": "Insurance",
             },
-            priority_codes=["39", "42", "27"],
         ),
     }
 

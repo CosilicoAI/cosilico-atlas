@@ -292,7 +292,8 @@ def download_title(title_num: int, output_dir: Path) -> Path:
     output_path = output_dir / f"usc{title_num}.xml"
 
     # URL format for USLM XML downloads
-    url = f"https://uscode.house.gov/download/releasepoints/us/pl/119/46/xml_usc{title_num:02d}@119-46.zip"
+    # Current release point as of Dec 2025: 119-59
+    url = f"https://uscode.house.gov/download/releasepoints/us/pl/119/59/xml_usc{title_num:02d}@119-59.zip"
 
     print(f"Downloading Title {title_num} from {url}...")
 

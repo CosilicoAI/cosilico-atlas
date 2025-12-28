@@ -337,12 +337,12 @@ def validate(path: Path):
 
 
 @main.command("download-state")
-@click.argument("state", type=click.Choice(["ny"], case_sensitive=False))
+@click.argument("state", type=click.Choice(["ny", "fl", "tx"], case_sensitive=False))
 @click.option(
     "--law",
     "-l",
     multiple=True,
-    help="Law code(s) to download (e.g., TAX, SOS). Defaults to TAX and SOS.",
+    help="Law code(s) to download (e.g., TAX, SOS for NY; chapter numbers for FL).",
 )
 @click.option(
     "--list-laws",
@@ -355,14 +355,24 @@ def download_state(ctx: click.Context, state: str, law: tuple[str, ...], list_la
 
     Currently supported states:
     - ny: New York (requires NY_LEGISLATION_API_KEY env var)
+    - fl: Florida (web scraping, no API key needed)
+    - tx: Texas (bulk ZIP download, no API key needed)
 
     Examples:
-        atlas download-state ny                    # Download TAX and SOS laws
-        atlas download-state ny --law TAX          # Download only Tax Law
-        atlas download-state ny --list-laws        # List available law codes
+        arch download-state ny                    # Download TAX and SOS laws
+        arch download-state ny --law TAX          # Download only Tax Law
+        arch download-state ny --list-laws        # List available law codes
+        arch download-state fl                    # Download FL tax chapters
+        arch download-state fl --law 212          # Download specific chapter
+        arch download-state tx                    # Download TX priority codes
+        arch download-state tx --law TX           # Download just Tax Code
     """
     if state.lower() == "ny":
         _download_ny_state(ctx, law, list_laws)
+    elif state.lower() == "fl":
+        _download_fl_state(ctx, law, list_laws)
+    elif state.lower() == "tx":
+        _download_tx_state(ctx, law, list_laws)
     else:
         console.print(f"[red]State not supported:[/red] {state}")
         raise SystemExit(1)
@@ -430,6 +440,125 @@ def _download_ny_state(ctx: click.Context, law_codes: tuple[str, ...], list_laws
         except Exception as e:
             console.print(f"[red]Error downloading {law_id}:[/red] {e}")
             continue
+
+    console.print(f"\n[green]Total: {total_sections} sections stored[/green]")
+
+
+def _download_fl_state(ctx: click.Context, chapters: tuple[str, ...], list_laws: bool) -> None:
+    """Download Florida state statutes."""
+    from arch.parsers.fl_statutes import (
+        FL_TAX_CHAPTERS,
+        FL_WELFARE_CHAPTERS,
+        FLStatutesClient,
+        convert_to_section,
+    )
+
+    # List chapters mode
+    if list_laws:
+        table = Table(title="Florida Statutes Chapters")
+        table.add_column("Chapter", style="cyan")
+        table.add_column("Title", style="green")
+        table.add_column("Category")
+
+        for ch, title in sorted(FL_TAX_CHAPTERS.items()):
+            table.add_row(str(ch), title, "Tax & Finance")
+
+        for ch, title in sorted(FL_WELFARE_CHAPTERS.items()):
+            table.add_row(str(ch), title, "Social Welfare")
+
+        console.print(table)
+        console.print(f"\n[dim]Total: {len(FL_TAX_CHAPTERS) + len(FL_WELFARE_CHAPTERS)} chapters available[/dim]")
+        return
+
+    # Default to tax chapters if none specified
+    if chapters:
+        chapter_list = [int(ch) for ch in chapters]
+    else:
+        chapter_list = list(FL_TAX_CHAPTERS.keys())
+
+    archive = Arch(db_path=ctx.obj["db"])
+    total_sections = 0
+
+    with FLStatutesClient(rate_limit_delay=0.3) as client:
+        for chapter in chapter_list:
+            chapter_name = FL_TAX_CHAPTERS.get(chapter) or FL_WELFARE_CHAPTERS.get(chapter, f"Chapter {chapter}")
+            console.print(f"\n[blue]Downloading:[/blue] Florida {chapter_name} (Ch. {chapter})")
+
+            try:
+                count = 0
+                with console.status(f"Fetching chapter {chapter}..."):
+                    for fl_section in client.iter_chapter(chapter):
+                        section = convert_to_section(fl_section)
+                        archive.storage.store_section(section)
+                        count += 1
+                        if count % 20 == 0:
+                            console.print(f"  [dim]Processed {count} sections...[/dim]")
+
+                console.print(f"[green]Stored {count} sections from Chapter {chapter}[/green]")
+                total_sections += count
+
+            except Exception as e:
+                console.print(f"[red]Error downloading Chapter {chapter}:[/red] {e}")
+                continue
+
+    console.print(f"\n[green]Total: {total_sections} sections stored[/green]")
+
+
+def _download_tx_state(ctx: click.Context, codes: tuple[str, ...], list_laws: bool) -> None:
+    """Download Texas state statutes."""
+    from arch.parsers.tx_statutes import (
+        TX_CODES,
+        TX_PRIORITY_CODES,
+        TXStatutesClient,
+        convert_to_section,
+    )
+
+    # List codes mode
+    if list_laws:
+        table = Table(title="Texas Statutes Codes")
+        table.add_column("Code", style="cyan")
+        table.add_column("Name", style="green")
+        table.add_column("Priority")
+
+        for code, name in sorted(TX_CODES.items()):
+            priority = "Yes" if code in TX_PRIORITY_CODES else ""
+            table.add_row(code, name, priority)
+
+        console.print(table)
+        console.print(f"\n[dim]Total: {len(TX_CODES)} codes available[/dim]")
+        console.print("[dim]Priority codes are downloaded by default[/dim]")
+        return
+
+    # Default to priority codes if none specified
+    if codes:
+        code_list = [c.upper() for c in codes]
+    else:
+        code_list = TX_PRIORITY_CODES
+
+    archive = Arch(db_path=ctx.obj["db"])
+    total_sections = 0
+
+    with TXStatutesClient() as client:
+        for code in code_list:
+            code_name = TX_CODES.get(code, f"{code} Code")
+            console.print(f"\n[blue]Downloading:[/blue] Texas {code_name}")
+
+            try:
+                count = 0
+                with console.status(f"Downloading and parsing {code}..."):
+                    for tx_section in client.iter_code(code):
+                        section = convert_to_section(tx_section)
+                        archive.storage.store_section(section)
+                        count += 1
+                        if count % 100 == 0:
+                            console.print(f"  [dim]Processed {count} sections...[/dim]")
+
+                console.print(f"[green]Stored {count} sections from {code}[/green]")
+                total_sections += count
+
+            except Exception as e:
+                console.print(f"[red]Error downloading {code}:[/red] {e}")
+                continue
 
     console.print(f"\n[green]Total: {total_sections} sections stored[/green]")
 

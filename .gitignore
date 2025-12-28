@@ -75,3 +75,5 @@ supabase/.temp/
 # OS
 .DS_Store
 Thumbs.db
+data/texas_test/
+data/texas_cache/

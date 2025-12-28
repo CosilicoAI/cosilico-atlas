@@ -1,18 +1,18 @@
-"""Main Atlas class - the public API."""
+"""Main Arch class - the public API."""
 
 from datetime import date
 from pathlib import Path
 
-from atlas.models import Citation, SearchResult, Section, TitleInfo
-from atlas.storage.base import StorageBackend
-from atlas.storage.sqlite import SQLiteStorage
+from arch.models import Citation, SearchResult, Section, TitleInfo
+from arch.storage.base import StorageBackend
+from arch.storage.sqlite import SQLiteStorage
 
 
-class Atlas:
+class Arch:
     """Main interface for accessing the law archive.
 
     Example:
-        >>> atlas = Atlas()
+        >>> atlas = Arch()
         >>> eitc = atlas.get("26 USC 32")
         >>> print(eitc.section_title)
         "Earned income"
@@ -27,7 +27,7 @@ class Atlas:
         db_path: Path | str = "atlas.db",
         storage: StorageBackend | None = None,
     ):
-        """Initialize Atlas.
+        """Initialize Arch.
 
         Args:
             db_path: Path to SQLite database (ignored if storage is provided)
@@ -129,7 +129,7 @@ class Atlas:
             >>> atlas.ingest_title("data/uscode/usc26.xml")
             2345  # sections ingested
         """
-        from atlas.parsers.uslm import USLMParser
+        from arch.parsers.uslm import USLMParser
 
         parser = USLMParser(xml_path)
         count = 0

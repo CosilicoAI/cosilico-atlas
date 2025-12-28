@@ -1,38 +1,57 @@
-# Cosilico Atlas
+# Cosilico Arch
 
-**Structured policy document API — statutes, regulations, and guidance.**
+**Foundational archive for all raw government source files.**
 
-Policy documents are public domain, but no open source project provides structured access via API with historical versions. Atlas fills that gap.
+Arch is the unified source of truth for statutes, regulations, IRS guidance, microdata, crosstabs, and parameters that power Cosilico's rules engine.
 
 ## Features
 
 - **Federal statutes** — All 54 titles of the US Code from official USLM XML
-- **IRS guidance** — Revenue Procedures, Revenue Rulings, Notices
-- **Historical versions** — Track changes over time
+- **IRS guidance** — Revenue Procedures, Revenue Rulings, Notices (570+ documents)
+- **State codes** — NY Open Legislation API, more states coming
+- **Microdata** — CPS ASEC, IRS PUF, SIPP (via microplex integration)
+- **Crosstabs** — IRS SOI, Census tables
+- **Provenance** — Every file tracked with fetch date, source URL, checksums
 - **REST API** — Query documents by citation, keyword, or path
-- **Structured data** — JSON output with section hierarchy, cross-references, and metadata
-- **State codes** — Incremental rollout (starting with CA, NY, TX)
+- **Change detection** — Know when upstream sources update
 
 ## Quick Start
 
 ```bash
 # Install
-pip install cosilico-atlas
+pip install cosilico-arch
 
 # Run the API server
-atlas serve
+arch serve
 
 # Or use the CLI
-atlas get "26 USC 32"        # Get IRC § 32 (EITC)
-atlas search "earned income" # Search across documents
+arch get "26 USC 32"        # Get IRC § 32 (EITC)
+arch search "earned income" # Search across documents
 ```
 
-## API Usage
+## CLI Usage
+
+```bash
+# Download sources
+arch download 26                    # Download Title 26 (IRC) from uscode.gov
+arch download-state ny              # Download NY state laws
+arch irs-guidance --year 2024       # Fetch IRS guidance for 2024
+
+# Query
+arch get "26 USC 32"                # Get specific section
+arch search "child tax credit"      # Full-text search
+arch stats                          # Show database stats
+
+# API
+arch serve                          # Start REST API at localhost:8000
+```
+
+## Python API
 
 ```python
-from atlas import Atlas
+from arch import Arch
 
-archive = Atlas()
+archive = Arch()
 
 # Get a specific section
 eitc = archive.get("26 USC 32")
@@ -67,128 +86,83 @@ curl "http://localhost:8000/v1/sections/26/32?as_of=2020-01-01"
 
 ## Data Sources
 
-| Source | Content | Format | Update Frequency |
-|--------|---------|--------|------------------|
-| [uscode.house.gov](https://uscode.house.gov/download/download.shtml) | US Code | USLM XML | Continuous |
-| [IRS.gov](https://www.irs.gov/) | Revenue Procedures, Rulings | HTML/PDF | Weekly |
-| [eCFR](https://www.ecfr.gov/) | Code of Federal Regulations | XML | Daily |
-| State legislatures | State codes | Varies | Varies |
+| Category | Source | Format | Files |
+|----------|--------|--------|-------|
+| Statutes | uscode.house.gov | USLM XML | 8 titles, 20k+ sections |
+| IRS Guidance | irs.gov/pub/irs-drop | PDF/HTML | 570+ documents |
+| State Laws | NY Open Legislation | JSON | Tax, Social Services |
+| Microdata | Census, IRS | ZIP | CPS, PUF, SIPP |
+| Crosstabs | IRS SOI, Census | XLSX | Income tables |
 
 ## Architecture
 
 ```
-cosilico-atlas/
-├── src/atlas/
+arch/
+├── src/arch/
 │   ├── __init__.py
-│   ├── archive.py       # Main Atlas class
-│   ├── models.py        # Pydantic models for statutes
+│   ├── archive.py        # Main Arch class
+│   ├── models.py         # Pydantic models for statutes
 │   ├── models_guidance.py # Models for IRS guidance
 │   ├── parsers/
-│   │   ├── uslm.py      # USLM XML parser
-│   │   ├── ecfr.py      # eCFR XML parser
-│   │   └── state/       # State-specific parsers
+│   │   ├── uslm.py       # USLM XML parser
+│   │   └── ny_laws.py    # NY Open Legislation parser
 │   ├── fetchers/
-│   │   └── irs_guidance.py # IRS guidance fetcher
+│   │   ├── irs_bulk.py   # IRS bulk guidance fetcher
+│   │   └── irs_guidance.py
 │   ├── api/
-│   │   ├── main.py      # FastAPI app
-│   │   └── routes.py    # API routes
-│   ├── cli.py           # Command-line interface
+│   │   └── main.py       # FastAPI app
+│   ├── cli.py            # Command-line interface
 │   └── storage/
-│       ├── base.py      # Storage interface
-│       ├── sqlite.py    # SQLite backend
-│       └── postgres.py  # PostgreSQL backend
-├── data/
-│   └── .gitkeep         # Downloaded/parsed data (gitignored)
-├── tests/
-└── scripts/
-    └── ingest.py        # Data ingestion scripts
+│       ├── base.py       # Storage interface
+│       ├── sqlite.py     # SQLite + FTS5 backend
+│       └── postgres.py   # PostgreSQL backend
+├── data/                  # Downloaded data (gitignored)
+├── catalog/               # Structured document catalog
+│   ├── guidance/          # IRS guidance documents
+│   ├── statute/           # Statute extracts
+│   └── parameters/        # Policy parameters by year
+└── sources/               # Raw source archives
 ```
 
-## Why This Exists
+## Storage
 
-From [DESIGN.md](https://github.com/CosilicoAI/cosilico-engine/blob/main/docs/DESIGN.md#1571-existing-statute-apis-and-why-we-need-our-own):
+Arch uses two storage tiers:
 
-> No open source project provides structured statute text via API with historical versions.
->
-> - OpenLaws.us is closest but proprietary
-> - Free Law Project covers case law only
-> - Cornell LII prohibits scraping
-> - Official sources require self-hosting
+- **Cloudflare R2** — Raw files (PDFs, XML, ZIPs)
+- **PostgreSQL (Supabase)** — Parsed content, metadata, full-text search
 
-We're building this for [Cosilico](https://cosilico.ai)'s rules engine but open-sourcing it as a public good.
+The `arch` schema in cosilico-db tracks:
+- File provenance (source URL, fetch timestamp, checksums)
+- Parsed content with tsvector for search
+- Cross-references between documents
 
 ## Deployment
 
-### Modal (Recommended)
-
-Modal provides serverless Python deployment with automatic scaling.
+### Modal (Serverless)
 
 ```bash
-# Install Modal CLI
-pip install modal
-modal setup  # Authenticate (first time only)
-
-# Upload the database to Modal Volume
-modal volume put atlas-db atlas.db /data/atlas.db
-
-# Deploy the API
+# Deploy to Modal
 modal deploy modal_app.py
 
-# Test locally before deploying
-modal serve modal_app.py
+# Upload database to Modal Volume
+modal volume put arch-db arch.db /data/arch.db
 ```
 
-After deployment, your API will be available at:
-`https://<your-workspace>--cosilico-atlas-fastapi-app.modal.run/`
-
-**Update database:**
-```bash
-modal volume put atlas-db atlas.db /data/atlas.db
-```
-
-### Docker (Container Deployment)
-
-For Fly.io, Railway, or any container platform:
+### Docker
 
 ```bash
-# Build the image
-docker build -t cosilico-atlas .
-
-# Run locally (mount database)
-docker run -p 8000:8000 -v $(pwd)/atlas.db:/app/atlas.db cosilico-atlas
-
-# Access at http://localhost:8000
-```
-
-**Deploy to Fly.io:**
-```bash
-fly launch
-fly volumes create atlas_data --size 1
-fly deploy
-```
-
-### Local Development
-
-```bash
-# Install dependencies
-pip install -e ".[dev]"
-
-# Run the server
-uvicorn atlas.api.main:app --reload
+# Build and run
+docker build -t arch .
+docker run -p 8000:8000 -v $(pwd)/arch.db:/app/arch.db arch
 ```
 
 ## License
 
-Apache 2.0 — Use it for anything.
+Apache 2.0
 
-## Contributing
+## Related Repos
 
-We welcome contributions! Priority areas:
-
-1. State code parsers (50 states to cover)
-2. IRS guidance extraction
-3. Historical version tracking
-4. Cross-reference resolution
-5. Full-text search improvements
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+- [rac](https://github.com/CosilicoAI/rac) — Core DSL engine
+- [rac-us](https://github.com/CosilicoAI/rac-us) — US federal rules in RAC
+- [microplex](https://github.com/CosilicoAI/microplex) — Microdata processing
+- [cosilico-db](https://github.com/CosilicoAI/cosilico-db) — PostgreSQL schema

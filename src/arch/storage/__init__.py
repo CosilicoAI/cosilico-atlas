@@ -1,11 +1,11 @@
 """Storage backends for the law archive."""
 
-from atlas.storage.base import StorageBackend
-from atlas.storage.sqlite import SQLiteStorage
+from arch.storage.base import StorageBackend
+from arch.storage.sqlite import SQLiteStorage
 
 # PostgreSQL is optional - only import if installed
 try:
-    from atlas.storage.postgres import PostgresStorage
+    from arch.storage.postgres import PostgresStorage
 
     __all__ = ["StorageBackend", "SQLiteStorage", "PostgresStorage"]
 except ImportError:

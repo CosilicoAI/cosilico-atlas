@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "cosilico-atlas"
+name = "cosilico-arch"
 version = "0.1.0"
-description = "Structured policy document API - statutes, regulations, and guidance"
+description = "Foundational archive for all raw government source files - statutes, IRS guidance, microdata, crosstabs, and parameters"
 readme = "README.md"
 license = {text = "Apache-2.0"}
 authors = [
@@ -35,7 +35,7 @@ dependencies = [
     "anthropic>=0.75.0",
     "requests>=2.32.5",
     "pyyaml>=6.0.3",
-    "modal>=1.3.0.post1",
+    "modal>=0.50",
     "beautifulsoup4>=4.12",
 ]
 
@@ -58,12 +58,12 @@ verify = [
 ]
 
 [project.scripts]
-atlas = "atlas.cli:main"
+arch = "arch.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/CosilicoAI/cosilico-atlas"
-Documentation = "https://docs.cosilico.ai/atlas"
-Repository = "https://github.com/CosilicoAI/cosilico-atlas"
+Homepage = "https://github.com/CosilicoAI/cosilico-arch"
+Documentation = "https://docs.cosilico.ai/arch"
+Repository = "https://github.com/CosilicoAI/cosilico-arch"
 
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from atlas.parsers.ny_laws import (
+from arch.parsers.ny_laws import (
     NY_LAW_CODES,
     NYLegislationAPIError,
     NYLegislationClient,
@@ -73,7 +73,7 @@ class TestExtractSectionNumber:
 
 
 class TestConvertToSection:
-    """Tests for converting NY sections to Atlas Section model."""
+    """Tests for converting NY sections to Arch Section model."""
 
     def test_convert_simple_section(self):
         """Test converting a simple NY section."""

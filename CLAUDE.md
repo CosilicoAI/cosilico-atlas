@@ -4,9 +4,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-Cosilico Atlas provides a structured policy document API. It downloads, parses, and stores legal and regulatory documents from official sources (US Code, state statutes, IRS guidance), enabling programmatic access to statute text with full-text search.
+Cosilico Arch is the foundational archive for ALL raw government source files. It downloads, parses, and stores legal and regulatory documents from official sources, enabling programmatic access with full-text search.
 
-This repo is part of the Cosilico ecosystem (see parent CLAUDE.md for full repo architecture). Its role is **source document archive** - storing PDFs, HTML, and structured statute text that feeds into the rules encoding pipeline.
+### Scope
+
+Cosilico Arch archives:
+- **Statutes**: US Code (USLM XML), state statutes (NY, CA, etc.)
+- **IRS Guidance**: Revenue Procedures, Revenue Rulings, Notices, Publications
+- **Microdata**: CPS Annual Social and Economic Supplement (ASEC), ACS, SCF
+- **Crosstabs**: Tax Statistics of Income (SOI), Census tables
+- **Parameters**: Policy parameters, thresholds, brackets by tax year
+
+This repo is part of the Cosilico ecosystem (see parent CLAUDE.md for full repo architecture). Its role is **source document archive** - storing PDFs, HTML, XML, and structured text that feeds into the rules encoding pipeline.
 
 ## Commands
 
@@ -15,16 +24,16 @@ This repo is part of the Cosilico ecosystem (see parent CLAUDE.md for full repo 
 uv sync                          # Or: pip install -e ".[dev,verify]"
 
 # CLI usage
-atlas download 26           # Download US Code Title 26 (IRC)
-atlas ingest data/uscode/usc26.xml  # Ingest into SQLite
-atlas get "26 USC 32"       # Get a specific section
-atlas search "earned income" --title 26  # Full-text search
-atlas serve                 # Start REST API at localhost:8000
+arch download 26           # Download US Code Title 26 (IRC)
+arch ingest data/uscode/usc26.xml  # Ingest into SQLite
+arch get "26 USC 32"       # Get a specific section
+arch search "earned income" --title 26  # Full-text search
+arch serve                 # Start REST API at localhost:8000
 
 # AI encoding pipeline
-atlas encode "26 USC 32"    # Encode statute into Cosilico DSL
-atlas validate ~/.cosilico/workspace/federal/statute/26/32
-atlas verify ~/.cosilico/workspace/federal/statute/26/32 -v eitc
+arch encode "26 USC 32"    # Encode statute into Cosilico DSL
+arch validate ~/.cosilico/workspace/federal/statute/26/32
+arch verify ~/.cosilico/workspace/federal/statute/26/32 -v eitc
 
 # Testing
 pytest                           # Run all tests
@@ -34,7 +43,7 @@ pytest -k "test_parse"           # Run tests matching pattern
 # Linting
 ruff check src/                  # Lint
 ruff format src/                 # Format
-mypy src/atlas/                  # Type check
+mypy src/arch/                   # Type check
 ```
 
 ## Architecture
@@ -44,7 +53,7 @@ mypy src/atlas/                  # Type check
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
 │  Official XML   │────▶│  USLM Parser    │────▶│  SQLite/FTS5   │
-│  (uscode.gov)   │     │  parsers/uslm.py│     │  atlas.db      │
+│  (uscode.gov)   │     │  parsers/uslm.py│     │  arch.db       │
 └─────────────────┘     └─────────────────┘     └─────────────────┘
                                                        │
 ┌─────────────────┐     ┌─────────────────┐            │
@@ -61,19 +70,19 @@ mypy src/atlas/                  # Type check
 
 ### Key Modules
 
-- **`atlas.py`** - Main `Atlas` class (public API)
+- **`archive.py`** - Main `Arch` class (public API)
 - **`models.py`** - Pydantic models: `Citation`, `Section`, `Subsection`, `SearchResult`
 - **`models_guidance.py`** - IRS guidance document models (Rev. Procs, Rulings)
 - **`parsers/uslm.py`** - USLM XML parser for US Code
 - **`storage/sqlite.py`** - SQLite backend with FTS5 full-text search
-- **`encoder.py`** - AI pipeline: statute → Cosilico DSL
+- **`encoder.py`** - AI pipeline: statute -> Cosilico DSL
 - **`verifier.py`** - Compare DSL outputs vs PolicyEngine
 - **`cli.py`** - Click CLI commands
 
 ### Data Flow
 
-1. **Download**: `atlas download 26` fetches XML from uscode.house.gov
-2. **Ingest**: Parser extracts sections, subsections, cross-references → SQLite
+1. **Download**: `arch download 26` fetches XML from uscode.house.gov
+2. **Ingest**: Parser extracts sections, subsections, cross-references -> SQLite
 3. **Query**: FTS5-powered search, citation lookup, cross-reference graph
 4. **Encode**: Claude generates DSL code from statute text
 5. **Verify**: Compare DSL test cases against PolicyEngine calculations
@@ -84,9 +93,12 @@ mypy src/atlas/                  # Type check
 data/           # Downloaded/ingested data (gitignored)
   uscode/       # Raw USLM XML files
   federal/      # Processed federal statutes
+  microdata/    # CPS, ACS microdata files
+  crosstabs/    # SOI, Census tabulations
 catalog/        # Structured statute catalog
   guidance/     # IRS guidance documents
   statute/      # Statute extracts
+  parameters/   # Policy parameters by year
 sources/        # Source document archives (state codes, etc.)
 output/         # Generated outputs (DSL, verification reports)
 schema/         # SQL migration files
@@ -97,8 +109,8 @@ schema/         # SQL migration files
 ### Citation Parsing
 
 Citations follow USC format and convert to filesystem paths:
-- `"26 USC 32"` → `Citation(title=26, section="32")`
-- `"26 USC 32(a)(1)"` → subsection `"a/1"`, path `"statute/26/32/a/1"`
+- `"26 USC 32"` -> `Citation(title=26, section="32")`
+- `"26 USC 32(a)(1)"` -> subsection `"a/1"`, path `"statute/26/32/a/1"`
 
 ### Storage Backend Interface
 
@@ -106,7 +118,7 @@ Citations follow USC format and convert to filesystem paths:
 
 ### DSL Encoding Output
 
-`atlas encode` generates four files per section:
+`arch encode` generates four files per section:
 - `rules.cosilico` - Executable DSL code
 - `tests.yaml` - Test cases for verification
 - `statute.md` - Original statute text

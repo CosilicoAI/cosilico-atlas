@@ -1,10 +1,10 @@
 """Parsers for various legal document formats."""
 
-from atlas.parsers.uslm import USLMParser
+from arch.parsers.uslm import USLMParser
 
 # State parsers - imported conditionally to avoid import errors if API keys not set
 try:
-    from atlas.parsers.ny_laws import (
+    from arch.parsers.ny_laws import (
         NY_LAW_CODES,
         NYLegislationClient,
         NYStateCitation,

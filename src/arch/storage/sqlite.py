@@ -6,8 +6,8 @@ from pathlib import Path
 
 import sqlite_utils
 
-from atlas.models import Citation, SearchResult, Section, Subsection, TitleInfo
-from atlas.storage.base import StorageBackend
+from arch.models import Citation, SearchResult, Section, Subsection, TitleInfo
+from arch.storage.base import StorageBackend
 
 
 class SQLiteStorage(StorageBackend):

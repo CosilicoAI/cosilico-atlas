@@ -13,7 +13,7 @@ from pathlib import Path
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from atlas.storage.guidance import GuidanceStorage
+from arch.storage.guidance import GuidanceStorage
 
 
 def main():

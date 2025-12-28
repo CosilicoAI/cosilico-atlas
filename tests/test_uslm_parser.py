@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from atlas.parsers.uslm import USLMParser
+from arch.parsers.uslm import USLMParser
 
 # Skip tests if Title 26 hasn't been downloaded
 TITLE_26_PATH = Path("data/uscode/usc26.xml")

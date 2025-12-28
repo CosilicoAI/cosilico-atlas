@@ -22,7 +22,7 @@ from typing import Callable
 import httpx
 from bs4 import BeautifulSoup
 
-from atlas.models_guidance import GuidanceSection, GuidanceType, RevenueProcedure
+from arch.models_guidance import GuidanceSection, GuidanceType, RevenueProcedure
 
 
 @dataclass
@@ -144,7 +144,7 @@ class IRSBulkFetcher:
             timeout=timeout,
             follow_redirects=True,
             headers={
-                "User-Agent": "Cosilico-Atlas/1.0 (Policy Research; +https://cosilico.ai)"
+                "User-Agent": "Cosilico-Arch/1.0 (Policy Research; +https://cosilico.ai)"
             },
         )
 

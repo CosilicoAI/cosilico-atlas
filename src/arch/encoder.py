@@ -6,7 +6,7 @@ from pathlib import Path
 
 from anthropic import Anthropic
 
-from atlas.models import Section
+from arch.models import Section
 
 
 @dataclass

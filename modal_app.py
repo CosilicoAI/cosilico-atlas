@@ -1,4 +1,4 @@
-"""Modal deployment for Atlas REST API.
+"""Modal deployment for Arch REST API.
 
 Deploy with:
     modal deploy modal_app.py
@@ -42,8 +42,8 @@ image = (
 @modal.concurrent(max_inputs=100)
 @modal.asgi_app()
 def fastapi_app():
-    """Serve the Atlas FastAPI application."""
-    from atlas.api.main import create_app
+    """Serve the Arch FastAPI application."""
+    from arch.api.main import create_app
 
     # Create app with volume-mounted database
     return create_app(db_path=DB_PATH)
@@ -55,7 +55,7 @@ def main():
     import subprocess
     import sys
 
-    print("Atlas Modal Deployment")
+    print("Arch Modal Deployment")
     print("=" * 40)
     print()
     print("Commands:")

@@ -7,11 +7,11 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
-from atlas.archive import Atlas
-from atlas.fetchers.irs_bulk import IRSBulkFetcher
-from atlas.models_guidance import GuidanceType
-from atlas.parsers.uslm import download_title
-from atlas.storage.guidance import GuidanceStorage
+from arch.archive import Arch
+from arch.fetchers.irs_bulk import IRSBulkFetcher
+from arch.models_guidance import GuidanceType
+from arch.parsers.uslm import download_title
+from arch.storage.guidance import GuidanceStorage
 
 console = Console()
 
@@ -36,7 +36,7 @@ def get(ctx: click.Context, citation: str, as_json: bool):
         atlas get "26 USC 32"
         atlas get "26 USC 32(a)(1)"
     """
-    archive = Atlas(db_path=ctx.obj["db"])
+    archive = Arch(db_path=ctx.obj["db"])
     section = archive.get(citation)
 
     if not section:
@@ -70,7 +70,7 @@ def search(ctx: click.Context, query: str, title: int | None, limit: int):
         atlas search "earned income"
         atlas search "child tax credit" --title 26
     """
-    archive = Atlas(db_path=ctx.obj["db"])
+    archive = Arch(db_path=ctx.obj["db"])
     results = archive.search(query, title=title, limit=limit)
 
     if not results:
@@ -98,7 +98,7 @@ def search(ctx: click.Context, query: str, title: int | None, limit: int):
 @click.pass_context
 def titles(ctx: click.Context):
     """List all available titles."""
-    archive = Atlas(db_path=ctx.obj["db"])
+    archive = Arch(db_path=ctx.obj["db"])
     title_list = archive.list_titles()
 
     if not title_list:
@@ -133,7 +133,7 @@ def ingest(ctx: click.Context, xml_path: Path):
     Example:
         atlas ingest data/uscode/usc26.xml
     """
-    archive = Atlas(db_path=ctx.obj["db"])
+    archive = Arch(db_path=ctx.obj["db"])
     with console.status(f"Ingesting {xml_path}..."):
         count = archive.ingest_title(xml_path)
     console.print(f"[green]Successfully ingested {count} sections[/green]")
@@ -194,7 +194,7 @@ def refs(ctx: click.Context, citation: str):
     Example:
         atlas refs "26 USC 32"
     """
-    archive = Atlas(db_path=ctx.obj["db"])
+    archive = Arch(db_path=ctx.obj["db"])
     refs = archive.get_references(citation)
 
     console.print(
@@ -236,10 +236,10 @@ def encode(ctx: click.Context, citation: str, output: Path, model: str):
         atlas encode "26 USC 32"
         atlas encode "26 USC 24" -o ./my-workspace
     """
-    from atlas.encoder import encode_and_save
-    from atlas.models import Citation
+    from arch.encoder import encode_and_save
+    from arch.models import Citation
 
-    archive = Atlas(db_path=ctx.obj["db"])
+    archive = Arch(db_path=ctx.obj["db"])
 
     # Parse citation
     try:
@@ -372,7 +372,7 @@ def _download_ny_state(ctx: click.Context, law_codes: tuple[str, ...], list_laws
     """Download New York state statutes."""
     import os
 
-    from atlas.parsers.ny_laws import NY_LAW_CODES, NYLegislationClient, download_ny_law
+    from arch.parsers.ny_laws import NY_LAW_CODES, NYLegislationClient, download_ny_law
 
     # Check for API key
     if not os.environ.get("NY_LEGISLATION_API_KEY"):
@@ -408,7 +408,7 @@ def _download_ny_state(ctx: click.Context, law_codes: tuple[str, ...], list_laws
     # Default to TAX and SOS if no laws specified
     laws_to_download = list(law_codes) if law_codes else ["TAX", "SOS"]
 
-    archive = Atlas(db_path=ctx.obj["db"])
+    archive = Arch(db_path=ctx.obj["db"])
     total_sections = 0
 
     for law_id in laws_to_download:
@@ -454,7 +454,7 @@ def verify(path: Path, pe_var: str, tolerance: float, save: Path | None):
         atlas verify ~/.cosilico/workspace/federal/statute/26/32 -v eitc
         atlas verify ~/.cosilico/workspace/federal/statute/26/24 -v ctc
     """
-    from atlas.verifier import (
+    from arch.verifier import (
         print_verification_report,
         save_verification_report,
         verify_encoding,
@@ -557,7 +557,7 @@ def fetch_guidance(
             console.print(f"[dim]{msg}[/dim]")
 
         html = fetcher._fetch_drop_listing(progress_callback=page_progress)
-        from atlas.fetchers.irs_bulk import parse_irs_drop_listing
+        from arch.fetchers.irs_bulk import parse_irs_drop_listing
 
         all_docs = []
         for y in years:
@@ -606,7 +606,7 @@ def fetch_guidance(
                 # Create RevenueProcedure model with placeholder content
                 from datetime import date as date_module
 
-                from atlas.models_guidance import RevenueProcedure
+                from arch.models_guidance import RevenueProcedure
 
                 rev_proc = RevenueProcedure(
                     doc_number=doc.doc_number,

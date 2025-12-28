@@ -6,7 +6,7 @@ from pathlib import Path
 
 import sqlite_utils
 
-from atlas.models_guidance import (
+from arch.models_guidance import (
     GuidanceSearchResult,
     GuidanceSection,
     GuidanceType,

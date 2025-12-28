@@ -8,8 +8,8 @@ import json
 import os
 from datetime import date
 
-from atlas.models import Citation, SearchResult, Section, Subsection, TitleInfo
-from atlas.storage.base import StorageBackend
+from arch.models import Citation, SearchResult, Section, Subsection, TitleInfo
+from arch.storage.base import StorageBackend
 
 # Lazy import - only load if postgres extras installed
 try:

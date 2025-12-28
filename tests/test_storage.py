@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from atlas.models import Citation, Section, Subsection
-from atlas.storage.sqlite import SQLiteStorage
+from arch.models import Citation, Section, Subsection
+from arch.storage.sqlite import SQLiteStorage
 
 
 @pytest.fixture

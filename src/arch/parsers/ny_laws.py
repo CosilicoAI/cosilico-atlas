@@ -18,7 +18,7 @@ from typing import Any
 
 import httpx
 
-from atlas.models import Citation, Section, Subsection
+from arch.models import Citation, Section, Subsection
 
 BASE_URL = "https://legislation.nysenate.gov/api/3"
 
@@ -281,13 +281,13 @@ class NYStateCitation:
 
 
 def convert_to_section(ny_section: NYSection) -> Section:
-    """Convert NY API section to Atlas Section model.
+    """Convert NY API section to Arch Section model.
 
     Args:
         ny_section: Section from NY API
 
     Returns:
-        Atlas Section model
+        Arch Section model
     """
     law_name = NY_LAW_CODES.get(ny_section.law_id, f"{ny_section.law_id} Law")
 

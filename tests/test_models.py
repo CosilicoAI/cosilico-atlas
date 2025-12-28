@@ -2,7 +2,7 @@
 
 import pytest
 
-from atlas.models import Citation
+from arch.models import Citation
 
 
 class TestCitation:

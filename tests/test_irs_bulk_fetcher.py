@@ -5,12 +5,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from atlas.fetchers.irs_bulk import (
+from arch.fetchers.irs_bulk import (
     IRSBulkFetcher,
     IRSDropDocument,
     parse_irs_drop_listing,
 )
-from atlas.models_guidance import GuidanceType
+from arch.models_guidance import GuidanceType
 
 
 class TestParseIrsDropListing:

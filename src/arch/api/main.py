@@ -7,8 +7,8 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from atlas.archive import Atlas
-from atlas.models import Citation, SearchResult, Section
+from arch.archive import Arch
+from arch.models import Citation, SearchResult, Section
 
 
 # Response models
@@ -111,7 +111,7 @@ def create_app(db_path: Path | str = "atlas.db") -> FastAPI:
     )
 
     # Initialize archive
-    archive = Atlas(db_path=db_path)
+    archive = Arch(db_path=db_path)
 
     @app.get("/")
     async def root():

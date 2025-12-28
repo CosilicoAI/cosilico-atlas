@@ -12,7 +12,7 @@ from typing import Optional
 import httpx
 from bs4 import BeautifulSoup
 
-from atlas.models_guidance import GuidanceSection, GuidanceType, RevenueProcedure
+from arch.models_guidance import GuidanceSection, GuidanceType, RevenueProcedure
 
 
 class IRSGuidanceFetcher:

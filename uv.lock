@@ -440,7 +440,7 @@ wheels = [
 ]
 
 [[package]]
-name = "cosilico-atlas"
+name = "cosilico-arch"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
@@ -486,7 +486,7 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.109" },
     { name = "httpx", specifier = ">=0.26" },
     { name = "lxml", specifier = ">=5.0" },
-    { name = "modal", specifier = ">=1.3.0.post1" },
+    { name = "modal", specifier = ">=0.50" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.8" },
     { name = "policyengine-core", marker = "extra == 'verify'", specifier = ">=3.20" },
     { name = "policyengine-us", marker = "extra == 'verify'", specifier = ">=1.45" },

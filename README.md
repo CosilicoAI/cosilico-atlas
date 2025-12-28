@@ -117,6 +117,66 @@ From [DESIGN.md](https://github.com/CosilicoAI/cosilico-engine/blob/main/docs/DE
 
 We're building this for [Cosilico](https://cosilico.ai)'s rules engine but open-sourcing it as a public good.
 
+## Deployment
+
+### Modal (Recommended)
+
+Modal provides serverless Python deployment with automatic scaling.
+
+```bash
+# Install Modal CLI
+pip install modal
+modal setup  # Authenticate (first time only)
+
+# Upload the database to Modal Volume
+modal volume put atlas-db atlas.db /data/atlas.db
+
+# Deploy the API
+modal deploy modal_app.py
+
+# Test locally before deploying
+modal serve modal_app.py
+```
+
+After deployment, your API will be available at:
+`https://<your-workspace>--cosilico-atlas-fastapi-app.modal.run/`
+
+**Update database:**
+```bash
+modal volume put atlas-db atlas.db /data/atlas.db
+```
+
+### Docker (Container Deployment)
+
+For Fly.io, Railway, or any container platform:
+
+```bash
+# Build the image
+docker build -t cosilico-atlas .
+
+# Run locally (mount database)
+docker run -p 8000:8000 -v $(pwd)/atlas.db:/app/atlas.db cosilico-atlas
+
+# Access at http://localhost:8000
+```
+
+**Deploy to Fly.io:**
+```bash
+fly launch
+fly volumes create atlas_data --size 1
+fly deploy
+```
+
+### Local Development
+
+```bash
+# Install dependencies
+pip install -e ".[dev]"
+
+# Run the server
+uvicorn atlas.api.main:app --reload
+```
+
 ## License
 
 Apache 2.0 — Use it for anything.

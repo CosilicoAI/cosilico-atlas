@@ -1,0 +1,59 @@
+# Git
+.git
+.gitignore
+
+# Virtual environments
+.venv
+venv
+env
+
+# Python cache
+__pycache__
+*.py[cod]
+*.egg-info
+*.egg
+.eggs
+
+# Testing
+.pytest_cache
+.coverage
+htmlcov
+tests
+
+# IDE
+.vscode
+.idea
+*.swp
+
+# Build artifacts
+build
+dist
+*.whl
+
+# Database (mount as volume instead)
+*.db
+
+# Documentation
+docs
+*.md
+!README.md
+
+# Modal
+modal_app.py
+
+# Local data
+data
+output
+sources
+.beads
+
+# Node
+node_modules
+package-lock.json
+
+# Wrangler
+.wrangler
+
+# Misc
+.DS_Store
+*.log

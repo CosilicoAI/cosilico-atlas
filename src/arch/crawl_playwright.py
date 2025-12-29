@@ -749,16 +749,34 @@ async def crawl_spa_state(
             original_upload = crawler.upload_to_r2
 
             def save_to_disk(url: str, html: str) -> bool:
+                import re
+                import hashlib
                 from urllib.parse import urlparse
 
                 parsed = urlparse(url)
                 path_parts = parsed.path.strip("/").replace("/", "_")
-                # Include fragment for section identification (e.g., #1.001)
+                query = parsed.query.replace("/", "_").replace("=", "-").replace("&", "_") if parsed.query else ""
                 fragment = parsed.fragment.replace("/", "_").replace(".", "-") if parsed.fragment else ""
+
+                # Build filename with all components
+                parts = [path_parts] if path_parts else ["index"]
+                if query:
+                    parts.append(query)
                 if fragment:
-                    filename = f"{path_parts}_{fragment}.html"
-                else:
-                    filename = f"{path_parts}.html" if path_parts else "index.html"
+                    parts.append(fragment)
+                filename = "_".join(parts) + ".html"
+
+                # Sanitize: remove invalid filename chars (colons, etc)
+                filename = re.sub(r'[:<>"|?*]', '-', filename)
+                filename = re.sub(r'https?-__', '', filename)
+                filename = re.sub(r'-+', '-', filename)
+
+                # Truncate if too long
+                if len(filename) > 200:
+                    url_hash = hashlib.md5(url.encode()).hexdigest()[:12]
+                    filename = f"{path_parts[:100]}_{url_hash}.html"
+                    filename = re.sub(r'[:<>"|?*]', '-', filename)
+
                 filepath = output_dir / filename
                 filepath.write_text(html, encoding="utf-8")
                 crawler.stats.bytes_uploaded += len(html.encode("utf-8"))

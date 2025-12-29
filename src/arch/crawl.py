@@ -204,7 +204,8 @@ async def crawl_jurisdiction(
             parsed = urlparse(url)
             path_parts = parsed.path.strip("/").replace("/", "_")
             # Include query params for sites that use them for section IDs
-            query = parsed.query.replace("=", "-").replace("&", "_") if parsed.query else ""
+            # Replace slashes, equals, ampersands with safe chars
+            query = parsed.query.replace("/", "_").replace("=", "-").replace("&", "_") if parsed.query else ""
             fragment = parsed.fragment.replace("/", "_").replace(".", "-") if parsed.fragment else ""
 
             # Build filename with all components
@@ -215,11 +216,17 @@ async def crawl_jurisdiction(
                 parts.append(fragment)
             filename = "_".join(parts) + ".html"
 
+            # Sanitize: remove invalid filename chars (colons, etc)
+            # Colons appear in embedded URLs like "docName=https://..."
+            filename = re.sub(r'[:<>"|?*]', '-', filename)
+            filename = re.sub(r'https?-__', '', filename)  # Remove "https--" prefix
+            filename = re.sub(r'-+', '-', filename)  # Collapse multiple dashes
+
             # Truncate if too long (filesystem limit)
             if len(filename) > 200:
-                import hashlib
                 url_hash = hashlib.md5(url.encode()).hexdigest()[:12]
                 filename = f"{path_parts[:100]}_{url_hash}.html"
+                filename = re.sub(r'[:<>"|?*]', '-', filename)
 
             filepath = output_dir / filename
             filepath.write_text(html, encoding="utf-8")

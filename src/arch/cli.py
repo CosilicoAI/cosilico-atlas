@@ -995,6 +995,7 @@ def stats(ctx: click.Context, as_json: bool):
 @click.option("--max-sections", "-n", type=int, help="Limit sections per jurisdiction")
 @click.option("--concurrency", "-c", default=5, help="Concurrent requests (HTML only)")
 @click.option("--force", "-f", is_flag=True, help="Re-download even if files exist")
+@click.option("--min-files", default=10, help="Skip states with at least this many files (default: 10)")
 def crawl(
     jurisdiction: str,
     output: str,
@@ -1002,6 +1003,7 @@ def crawl(
     max_sections: int | None,
     concurrency: int,
     force: bool,
+    min_files: int,
 ):
     """Crawl statutes from official sources.
 
@@ -1012,8 +1014,13 @@ def crawl(
       - 'us-tx': Texas
       - etc.
 
+    By default, skips states that already have >= 10 files downloaded.
+    Use --force to re-crawl, or --min-files to adjust threshold.
+
     Examples:
-        arch crawl all                    # Crawl everything
+        arch crawl all                    # Crawl all, skip existing
+        arch crawl all --force            # Re-crawl everything
+        arch crawl all --min-files 50     # Skip states with 50+ files
         arch crawl us-ca --dry-run        # Preview California crawl
         arch crawl us-tx -n 100           # Texas, first 100 sections
     """
@@ -1045,9 +1052,23 @@ def crawl(
 
     async def run_crawls():
         results = {}
+        total = len(jurisdictions)
+        skipped = 0
 
-        for jur in jurisdictions:
-            console.print(f"\n[bold blue]{'[DRY RUN] ' if dry_run else ''}Crawling {jur}...[/bold blue]")
+        for i, jur in enumerate(jurisdictions, 1):
+            progress = f"[{i}/{total}]"
+
+            # Check if already has enough files (skip unless --force)
+            jur_dir = output_dir / jur
+            if not force and jur_dir.exists():
+                existing = len(list(jur_dir.glob("*.html")))
+                if existing >= min_files:
+                    console.print(f"\n[dim]{progress} Skip {jur} ({existing} files exist)[/dim]")
+                    results[jur] = {"source": "skipped", "files": existing, "skipped": True}
+                    skipped += 1
+                    continue
+
+            console.print(f"\n[bold blue]{progress} {'[DRY RUN] ' if dry_run else ''}Crawling {jur}...[/bold blue]")
 
             # Check if Archive.org has bulk data
             if jur in ARCHIVE_ORG_STATES:
@@ -1114,7 +1135,9 @@ def crawl(
         if isinstance(result, dict):
             source = result.get("source", "html")
             sections = result.get("sections", result.get("files", 0))
-            if result.get("error"):
+            if result.get("skipped"):
+                status = "[dim]skipped[/dim]"
+            elif result.get("error"):
                 status = f"[red]{result['error'][:30]}...[/red]"
             elif result.get("dry_run"):
                 status = "[yellow]dry run[/yellow]"

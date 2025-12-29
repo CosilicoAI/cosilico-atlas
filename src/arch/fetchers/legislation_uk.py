@@ -431,8 +431,8 @@ class UKLegislationFetcher:
             if id_elem is None or id_elem.text is None:
                 return None
 
-            # Extract act_id from URL: http://www.legislation.gov.uk/ukpga/2003/1
-            match = re.search(r"legislation\.gov\.uk/(ukpga/\d+/\d+)", id_elem.text)
+            # Extract act_id from URL: http://www.legislation.gov.uk/id/ukpga/2025/36
+            match = re.search(r"legislation\.gov\.uk/(?:id/)?(ukpga/\d+/\d+)", id_elem.text)
             if not match:
                 return None
 

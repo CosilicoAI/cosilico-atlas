@@ -94,6 +94,9 @@ data/           # Downloaded/ingested data (gitignored)
   uscode/       # Raw USLM XML files
   federal/      # Processed federal statutes
   microdata/    # CPS, ACS microdata files
+    census_blocks/  # Census PL 94-171 block-level data
+      pl94171_blocks_2020.parquet  # ~11M blocks with population
+      metadata.json                 # Source and fetch info
   crosstabs/    # SOI, Census tabulations
 catalog/        # Structured statute catalog
   guidance/     # IRS guidance documents
@@ -103,6 +106,19 @@ sources/        # Source document archives (state codes, etc.)
 output/         # Generated outputs (DSL, verification reports)
 schema/         # SQL migration files
 ```
+
+### Data Flow: Raw Files vs Processed Tables
+
+- **arch (this repo)**: Raw government files (XML, PDF, CSV, Parquet)
+  - Synced to Cloudflare R2 for durable storage
+  - Source of truth for original data
+- **Supabase PostgreSQL**: Processed/derived tables
+  - `block_probabilities`: Block sampling probabilities by state/CD
+  - Queryable for microsimulation
+
+Example: Census blocks
+1. Raw: `arch/data/microdata/census_blocks/pl94171_blocks_2020.parquet`
+2. Processed: Supabase `block_probabilities` table (state_fips, cd_id, prob)
 
 ## Key Patterns
 

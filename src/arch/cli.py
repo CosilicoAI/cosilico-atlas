@@ -1398,8 +1398,8 @@ def search_cfr(ctx: click.Context, query: str, title: int | None, limit: int):
 
 
 @main.command("download-uk")
-@click.argument("citation")
-@click.option("--sections", "-n", type=int, help="Max sections to download")
+@click.argument("citation", required=False)
+@click.option("--sections", "-n", type=int, help="Max sections to download per act")
 @click.option(
     "--output",
     "-o",
@@ -1407,7 +1407,23 @@ def search_cfr(ctx: click.Context, query: str, title: int | None, limit: int):
     default=Path.home() / ".arch" / "uk",
     help="Output directory",
 )
-def download_uk(citation: str, sections: int | None, output: Path):
+@click.option("--all", "download_all", is_flag=True, help="Download ALL UK Public General Acts")
+@click.option("--priority", is_flag=True, help="Download priority acts (tax/benefits)")
+@click.option("--list-acts", is_flag=True, help="List all available ukpga acts without downloading")
+@click.option("--resume", is_flag=True, help="Resume previous bulk download")
+@click.option("--log", "-l", is_flag=True, help="Write progress log to file")
+@click.option("--dry-run", is_flag=True, help="Show what would be downloaded without fetching")
+def download_uk(
+    citation: str | None,
+    sections: int | None,
+    output: Path,
+    download_all: bool,
+    priority: bool,
+    list_acts: bool,
+    resume: bool,
+    log: bool,
+    dry_run: bool,
+):
     """Download UK legislation from legislation.gov.uk.
 
     CITATION can be:
@@ -1415,15 +1431,182 @@ def download_uk(citation: str, sections: int | None, output: Path):
       - ukpga/2003/1/section/62 (single section)
       - "ITEPA 2003 s.62" (human-readable)
 
+    Bulk download modes:
+      --all       Download ALL UK Public General Acts (~4000 acts)
+      --priority  Download priority tax/benefits acts only (10 acts)
+      --list-acts List all available acts without downloading
+
     Examples:
-        arch download-uk ukpga/2003/1              # ITEPA 2003
+        arch download-uk ukpga/2003/1              # Single act (ITEPA 2003)
         arch download-uk ukpga/2007/3 -n 50        # ITA 2007, first 50 sections
-        arch download-uk ukpga/2003/1/section/62   # Single section
+        arch download-uk --priority               # Download priority acts
+        arch download-uk --all                    # Download ALL ukpga acts
+        arch download-uk --all --resume           # Resume interrupted download
+        arch download-uk --list-acts              # List all available acts
     """
     import asyncio
+    from datetime import datetime
 
-    from arch.fetchers.legislation_uk import UKLegislationFetcher
+    from arch.fetchers.legislation_uk import (
+        UK_PRIORITY_ACTS,
+        BulkDownloadProgress,
+        UKActReference,
+        UKLegislationFetcher,
+    )
     from arch.models_uk import UKCitation
+
+    fetcher = UKLegislationFetcher(data_dir=output)
+
+    # List all acts mode
+    if list_acts:
+        console.print("[blue]Enumerating all UK Public General Acts...[/blue]")
+
+        async def list_all():
+            acts = await fetcher.list_all_ukpga_acts(
+                page_size=50,
+                progress_callback=lambda msg: console.print(f"[dim]{msg}[/dim]"),
+            )
+            return acts
+
+        acts = asyncio.run(list_all())
+
+        # Group by year
+        by_year: dict[int, list] = {}
+        for act in acts:
+            by_year.setdefault(act.year, []).append(act)
+
+        table = Table(title=f"UK Public General Acts ({len(acts)} total)")
+        table.add_column("Year", style="cyan", justify="right")
+        table.add_column("Count", style="green", justify="right")
+        table.add_column("Example Acts")
+
+        for year in sorted(by_year.keys(), reverse=True)[:20]:
+            year_acts = by_year[year]
+            examples = ", ".join(a.title[:30] for a in year_acts[:2])
+            if len(year_acts) > 2:
+                examples += f" (+{len(year_acts)-2} more)"
+            table.add_row(str(year), str(len(year_acts)), examples)
+
+        console.print(table)
+        console.print(f"\n[dim]Total: {len(acts)} acts from {min(by_year.keys())} to {max(by_year.keys())}[/dim]")
+        return
+
+    # Priority acts mode
+    if priority:
+        console.print("[blue]Downloading priority UK tax/benefits acts...[/blue]")
+
+        async def download_priority():
+            total_sections = 0
+            for act_ref in UK_PRIORITY_ACTS:
+                try:
+                    parsed = UKCitation.from_string(act_ref)
+                    console.print(f"\n[cyan]Downloading {act_ref}...[/cyan]")
+
+                    if dry_run:
+                        console.print(f"  [yellow]DRY RUN - would download {act_ref}[/yellow]")
+                        continue
+
+                    act = await fetcher.fetch_act_metadata(parsed)
+                    console.print(f"  [green]{act.title}[/green]")
+
+                    # Download the full XML
+                    act_output = output / "ukpga" / str(parsed.year) / f"{parsed.number}.xml"
+                    act_output.parent.mkdir(parents=True, exist_ok=True)
+
+                    url = f"https://www.legislation.gov.uk/{act_ref}/data.xml"
+                    await fetcher._rate_limit()
+
+                    import httpx
+                    async with httpx.AsyncClient() as client:
+                        response = await client.get(
+                            url,
+                            headers={"User-Agent": "Arch/1.0"},
+                            follow_redirects=True,
+                            timeout=120,
+                        )
+                        response.raise_for_status()
+                        act_output.write_text(response.text)
+
+                    section_count = response.text.count("<P1 ")
+                    total_sections += section_count
+                    console.print(f"  [dim]Saved {section_count} sections to {act_output}[/dim]")
+
+                except Exception as e:
+                    console.print(f"  [red]FAILED: {e}[/red]")
+
+            return total_sections
+
+        total = asyncio.run(download_priority())
+        console.print(f"\n[green]Downloaded {len(UK_PRIORITY_ACTS)} priority acts ({total} total sections)[/green]")
+        return
+
+    # Bulk download ALL acts mode
+    if download_all:
+        console.print("[bold blue]Bulk downloading ALL UK Public General Acts[/bold blue]")
+        console.print(f"[dim]Output directory: {output}[/dim]")
+
+        if dry_run:
+            console.print("\n[yellow]DRY RUN - enumerating acts only[/yellow]")
+
+        # Setup log file
+        log_file = None
+        if log:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            log_file = output / "logs" / f"download_{timestamp}.log"
+            console.print(f"[dim]Log file: {log_file}[/dim]")
+
+        # Setup progress tracker
+        progress_file = output / "ukpga" / "progress.json"
+        progress = BulkDownloadProgress(progress_file)
+
+        if resume and progress.downloaded:
+            console.print(f"[cyan]Resuming download: {progress.summary}[/cyan]")
+        elif progress.downloaded and not resume:
+            console.print(f"[yellow]Previous progress found ({len(progress.downloaded)} acts)[/yellow]")
+            console.print("[yellow]Use --resume to continue, or delete progress.json to start fresh[/yellow]")
+            return
+
+        async def bulk_download():
+            if dry_run:
+                # Just enumerate
+                acts = await fetcher.list_all_ukpga_acts(
+                    page_size=50,
+                    progress_callback=lambda msg: console.print(f"[dim]{msg}[/dim]"),
+                )
+                console.print(f"\n[green]Found {len(acts)} acts (dry run - not downloading)[/green]")
+                return None
+
+            result = await fetcher.bulk_download_ukpga(
+                output_dir=output / "ukpga",
+                progress=progress,
+                progress_callback=lambda msg: console.print(msg),
+                log_file=log_file,
+            )
+            return result
+
+        result = asyncio.run(bulk_download())
+
+        if result:
+            console.print(f"\n[bold green]Download complete![/bold green]")
+            console.print(f"[green]{result.summary}[/green]")
+
+            if result.failed:
+                console.print(f"\n[yellow]Failed acts ({len(result.failed)}):[/yellow]")
+                for act_id, error in list(result.failed.items())[:10]:
+                    console.print(f"  [red]{act_id}:[/red] {error}")
+                if len(result.failed) > 10:
+                    console.print(f"  [dim]... and {len(result.failed) - 10} more[/dim]")
+
+        return
+
+    # Single act/section download (original behavior)
+    if not citation:
+        console.print("[red]Error:[/red] CITATION required unless using --all, --priority, or --list-acts")
+        console.print("\nExamples:")
+        console.print("  arch download-uk ukpga/2003/1")
+        console.print("  arch download-uk --all")
+        console.print("  arch download-uk --priority")
+        raise SystemExit(1)
 
     # Parse citation
     try:
@@ -1431,8 +1614,6 @@ def download_uk(citation: str, sections: int | None, output: Path):
     except ValueError as e:
         console.print(f"[red]Invalid citation:[/red] {e}")
         raise SystemExit(1) from e
-
-    fetcher = UKLegislationFetcher(data_dir=output)
 
     if parsed.section:
         # Single section

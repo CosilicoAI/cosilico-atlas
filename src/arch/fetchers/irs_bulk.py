@@ -384,6 +384,172 @@ class IRSBulkFetcher:
         }
         return f"{type_names[doc.doc_type]} {doc.doc_number}"
 
+    def download_bulk_with_extraction(
+        self,
+        years: list[int],
+        doc_types: list[GuidanceType] | None = None,
+        output_dir: Path | None = None,
+        extract_text: bool = True,
+        extract_params: bool = True,
+        rate_limit_seconds: float = 1.0,
+        progress_callback: Callable[[str], None] | None = None,
+        skip_existing: bool = True,
+    ) -> dict:
+        """Download IRS guidance documents with full text extraction.
+
+        This is the preferred method for bulk downloading guidance documents.
+        It downloads PDFs, extracts text, parses document structure, and
+        saves extracted parameters to structured files.
+
+        Args:
+            years: List of years to download (e.g., [2020, 2021, 2022, 2023, 2024])
+            doc_types: Document types to download (default: Rev. Procs, Rev. Rulings, Notices)
+            output_dir: Base output directory (default: data/guidance)
+            extract_text: Whether to extract text from PDFs (default: True)
+            extract_params: Whether to extract parameters from text (default: True)
+            rate_limit_seconds: Delay between requests in seconds (default: 1.0)
+            progress_callback: Optional callback for progress updates
+            skip_existing: Skip documents that already have PDF files (default: True)
+
+        Returns:
+            Dictionary with download statistics:
+            {
+                "total_found": int,
+                "downloaded": int,
+                "skipped": int,
+                "errors": int,
+                "by_type": {type: count},
+                "by_year": {year: count},
+            }
+        """
+        import json
+        import time
+
+        from arch.fetchers.pdf_extractor import PDFTextExtractor
+        from arch.fetchers.irs_parser import IRSDocumentParser, IRSParameterExtractor
+
+        if doc_types is None:
+            doc_types = [GuidanceType.REV_PROC, GuidanceType.REV_RUL, GuidanceType.NOTICE]
+
+        if output_dir is None:
+            output_dir = Path("data/guidance")
+
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        # Create subdirectories for each type
+        pdf_dir = output_dir / "irs"
+        text_dir = output_dir / "text"
+        params_dir = output_dir / "parameters"
+
+        for d in [pdf_dir, text_dir, params_dir]:
+            d.mkdir(parents=True, exist_ok=True)
+
+        stats = {
+            "total_found": 0,
+            "downloaded": 0,
+            "skipped": 0,
+            "errors": 0,
+            "by_type": {},
+            "by_year": {},
+        }
+
+        # Get full document listing
+        if progress_callback:
+            progress_callback("Scanning IRS drop folder...")
+
+        html = self._fetch_drop_listing(progress_callback=progress_callback)
+
+        all_docs = []
+        for year in years:
+            docs = parse_irs_drop_listing(html, year=year, doc_types=doc_types)
+            all_docs.extend(docs)
+
+        stats["total_found"] = len(all_docs)
+
+        if progress_callback:
+            progress_callback(f"Found {len(all_docs)} documents for years {years}")
+
+        # Initialize extractors
+        pdf_extractor = PDFTextExtractor() if extract_text else None
+        doc_parser = IRSDocumentParser() if extract_text else None
+        param_extractor = IRSParameterExtractor() if extract_params else None
+
+        for i, doc in enumerate(all_docs):
+            doc_id = f"{doc.doc_type.value[:3]}-{doc.doc_number}"
+
+            if progress_callback:
+                progress_callback(
+                    f"[{i + 1}/{len(all_docs)}] {doc.doc_type.value} {doc.doc_number}"
+                )
+
+            # Check if already exists
+            pdf_path = pdf_dir / doc.pdf_filename
+            if skip_existing and pdf_path.exists():
+                if progress_callback:
+                    progress_callback(f"  Skipping (exists): {doc.pdf_filename}")
+                stats["skipped"] += 1
+                continue
+
+            try:
+                # Rate limiting
+                if i > 0:
+                    time.sleep(rate_limit_seconds)
+
+                # Download PDF
+                pdf_content = self.fetch_pdf(doc)
+                pdf_path.write_bytes(pdf_content)
+
+                # Extract text if requested
+                full_text = ""
+                parsed_doc = None
+                parameters = {}
+
+                if extract_text and pdf_extractor:
+                    try:
+                        full_text = pdf_extractor.extract_text(pdf_content)
+
+                        # Save extracted text
+                        text_filename = doc.pdf_filename.replace(".pdf", ".txt")
+                        text_path = text_dir / text_filename
+                        text_path.write_text(full_text, encoding="utf-8")
+
+                        # Parse document structure
+                        if doc_parser:
+                            parsed_doc = doc_parser.parse(full_text)
+
+                        # Extract parameters
+                        if extract_params and param_extractor and full_text:
+                            parameters = param_extractor.extract(full_text)
+                            if parameters:
+                                params_filename = doc.pdf_filename.replace(".pdf", ".json")
+                                params_path = params_dir / params_filename
+                                params_path.write_text(
+                                    json.dumps(parameters, indent=2),
+                                    encoding="utf-8",
+                                )
+
+                    except Exception as e:
+                        if progress_callback:
+                            progress_callback(f"  Warning: Text extraction failed: {e}")
+
+                # Update statistics
+                stats["downloaded"] += 1
+                doc_type_key = doc.doc_type.value
+                stats["by_type"][doc_type_key] = stats["by_type"].get(doc_type_key, 0) + 1
+                stats["by_year"][doc.year] = stats["by_year"].get(doc.year, 0) + 1
+
+                if progress_callback:
+                    size_kb = len(pdf_content) / 1024
+                    params_info = f", {len(parameters)} param groups" if parameters else ""
+                    progress_callback(f"  Downloaded: {size_kb:.1f} KB{params_info}")
+
+            except Exception as e:
+                stats["errors"] += 1
+                if progress_callback:
+                    progress_callback(f"  ERROR: {e}")
+
+        return stats
+
     def close(self):
         """Close the HTTP client."""
         self.client.close()

@@ -167,3 +167,138 @@ class TestIRSBulkFetcher:
             pdf_filename="rp-24-40.pdf",
         )
         assert doc.pdf_url == "https://www.irs.gov/pub/irs-drop/rp-24-40.pdf"
+
+
+class TestBulkDownloadWithExtraction:
+    """Tests for bulk download with text extraction."""
+
+    @pytest.fixture
+    def fetcher(self):
+        """Create a fetcher instance."""
+        return IRSBulkFetcher()
+
+    def test_download_and_extract_document(self, fetcher, tmp_path):
+        """Test downloading and extracting text from a single document."""
+        # Skip if we don't have a real PDF to test with
+        # This tests the integration with PDF extraction
+        doc = IRSDropDocument(
+            doc_type=GuidanceType.REV_PROC,
+            doc_number="2024-40",
+            year=2024,
+            pdf_filename="rp-24-40.pdf",
+        )
+
+        # Create a minimal fake PDF for testing
+        # Real PDF would require actual IRS download
+        mock_pdf_content = b"%PDF-1.4 mock content"
+
+        with patch.object(fetcher, "fetch_pdf", return_value=mock_pdf_content):
+            # Mock PDF extraction since we're using a fake PDF
+            # The imports are local in fetch_and_extract, so patch at the source modules
+            with patch(
+                "arch.fetchers.pdf_extractor.PDFTextExtractor"
+            ) as mock_extractor_class:
+                mock_extractor = MagicMock()
+                mock_extractor.extract_text.return_value = "Rev. Proc. 2024-40\nSECTION 1. PURPOSE\nTest content"
+                mock_extractor_class.return_value = mock_extractor
+
+                with patch("arch.fetchers.irs_parser.IRSDocumentParser") as mock_parser_class:
+                    mock_parser = MagicMock()
+                    mock_parser.parse.return_value = MagicMock(
+                        sections=[],
+                        effective_year=2025,
+                    )
+                    mock_parser_class.return_value = mock_parser
+
+                    with patch("arch.fetchers.irs_parser.IRSParameterExtractor") as mock_param_class:
+                        mock_param = MagicMock()
+                        mock_param.extract.return_value = {}
+                        mock_param_class.return_value = mock_param
+
+                        result = fetcher.fetch_and_extract(doc, save_pdf=tmp_path / "test.pdf")
+
+        assert result.doc_number == "2024-40"
+        assert result.doc_type == GuidanceType.REV_PROC
+        assert "Test content" in result.full_text
+
+    def test_bulk_download_progress_callback(self, fetcher, tmp_path):
+        """Test progress callback during bulk download."""
+        mock_html = """
+        <a href="rp-24-40.pdf">rp-24-40.pdf</a>
+        <a href="rp-24-39.pdf">rp-24-39.pdf</a>
+        """
+
+        progress_messages = []
+
+        def progress_callback(msg):
+            progress_messages.append(msg)
+
+        with patch.object(fetcher, "_fetch_drop_listing", return_value=mock_html):
+            mock_pdf = b"%PDF-1.4 test"
+            with patch.object(fetcher, "fetch_pdf", return_value=mock_pdf):
+                fetcher.fetch_and_store(
+                    years=[2024],
+                    doc_types=[GuidanceType.REV_PROC],
+                    download_dir=tmp_path,
+                    progress_callback=progress_callback,
+                )
+
+        # Should have progress messages
+        assert len(progress_messages) > 0
+        assert any("Found" in msg for msg in progress_messages)
+
+    def test_bulk_download_saves_pdfs(self, fetcher, tmp_path):
+        """Test that PDFs are saved to the specified directory."""
+        mock_html = """
+        <a href="rp-24-40.pdf">rp-24-40.pdf</a>
+        """
+
+        with patch.object(fetcher, "_fetch_drop_listing", return_value=mock_html):
+            mock_pdf = b"%PDF-1.4 test content for saving"
+            with patch.object(fetcher, "fetch_pdf", return_value=mock_pdf):
+                results = fetcher.fetch_and_store(
+                    years=[2024],
+                    doc_types=[GuidanceType.REV_PROC],
+                    download_dir=tmp_path,
+                )
+
+        # Check PDF was saved
+        pdf_file = tmp_path / "rp-24-40.pdf"
+        assert pdf_file.exists()
+        assert pdf_file.read_bytes() == mock_pdf
+
+    def test_bulk_download_handles_errors_gracefully(self, fetcher, tmp_path):
+        """Test that errors during download don't stop the entire process."""
+        import httpx
+
+        mock_html = """
+        <a href="rp-24-40.pdf">rp-24-40.pdf</a>
+        <a href="rp-24-39.pdf">rp-24-39.pdf</a>
+        """
+
+        call_count = [0]
+
+        def mock_fetch_pdf(doc):
+            call_count[0] += 1
+            if call_count[0] == 1:
+                raise httpx.HTTPError("404 Not Found")
+            return b"%PDF-1.4 success"
+
+        error_messages = []
+
+        def progress_callback(msg):
+            if "ERROR" in msg:
+                error_messages.append(msg)
+
+        with patch.object(fetcher, "_fetch_drop_listing", return_value=mock_html):
+            with patch.object(fetcher, "fetch_pdf", side_effect=mock_fetch_pdf):
+                results = fetcher.fetch_and_store(
+                    years=[2024],
+                    doc_types=[GuidanceType.REV_PROC],
+                    download_dir=tmp_path,
+                    progress_callback=progress_callback,
+                )
+
+        # Should have gotten one successful result despite one failure
+        assert len(results) == 1
+        assert len(error_messages) == 1

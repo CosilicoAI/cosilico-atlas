@@ -1397,5 +1397,137 @@ def search_cfr(ctx: click.Context, query: str, title: int | None, limit: int):
     console.print(table)
 
 
+@main.command("download-uk")
+@click.argument("citation")
+@click.option("--sections", "-n", type=int, help="Max sections to download")
+@click.option(
+    "--output",
+    "-o",
+    type=click.Path(path_type=Path),
+    default=Path.home() / ".arch" / "uk",
+    help="Output directory",
+)
+def download_uk(citation: str, sections: int | None, output: Path):
+    """Download UK legislation from legislation.gov.uk.
+
+    CITATION can be:
+      - ukpga/2003/1 (entire Act)
+      - ukpga/2003/1/section/62 (single section)
+      - "ITEPA 2003 s.62" (human-readable)
+
+    Examples:
+        arch download-uk ukpga/2003/1              # ITEPA 2003
+        arch download-uk ukpga/2007/3 -n 50        # ITA 2007, first 50 sections
+        arch download-uk ukpga/2003/1/section/62   # Single section
+    """
+    import asyncio
+
+    from arch.fetchers.legislation_uk import UKLegislationFetcher
+    from arch.models_uk import UKCitation
+
+    # Parse citation
+    try:
+        parsed = UKCitation.from_string(citation)
+    except ValueError as e:
+        console.print(f"[red]Invalid citation:[/red] {e}")
+        raise SystemExit(1) from e
+
+    fetcher = UKLegislationFetcher(data_dir=output)
+
+    if parsed.section:
+        # Single section
+        console.print(f"[blue]Fetching:[/blue] {parsed.legislation_url}")
+        with console.status("Downloading..."):
+            section = asyncio.run(fetcher.fetch_section(parsed))
+        console.print(f"[green]Downloaded:[/green] {section.title}")
+        console.print(f"[dim]Text: {len(section.text)} chars[/dim]")
+    else:
+        # Entire Act
+        console.print(f"[blue]Fetching Act:[/blue] {parsed.legislation_url}")
+
+        async def fetch_all():
+            act = await fetcher.fetch_act_metadata(parsed)
+            console.print(f"[green]Act:[/green] {act.title}")
+            console.print(f"[dim]Sections: {act.section_count or 'unknown'}[/dim]")
+
+            max_sections = sections or act.section_count or 100
+            count = 0
+            with console.status(f"Downloading sections (max {max_sections})..."):
+                for i in range(1, max_sections + 1):
+                    try:
+                        section_cite = UKCitation(
+                            type=parsed.type,
+                            year=parsed.year,
+                            number=parsed.number,
+                            section=str(i),
+                        )
+                        await fetcher.fetch_section(section_cite)
+                        count += 1
+                        if count % 50 == 0:
+                            console.print(f"  [dim]Downloaded {count} sections...[/dim]")
+                    except Exception:
+                        continue
+            return count
+
+        count = asyncio.run(fetch_all())
+        console.print(f"[green]Downloaded {count} sections[/green]")
+
+
+@main.command("get-uk")
+@click.argument("citation")
+@click.option("--json", "as_json", is_flag=True, help="Output as JSON")
+def get_uk(citation: str, as_json: bool):
+    """Get UK legislation by citation.
+
+    Fetches from legislation.gov.uk and displays.
+
+    Examples:
+        arch get-uk "ukpga/2003/1/section/62"
+        arch get-uk "ITEPA 2003 s.62"
+        arch get-uk "ukpga/2007/3/section/1" --json
+    """
+    import asyncio
+
+    from arch.fetchers.legislation_uk import UKLegislationFetcher
+    from arch.models_uk import UKCitation
+
+    try:
+        parsed = UKCitation.from_string(citation)
+    except ValueError as e:
+        console.print(f"[red]Invalid citation:[/red] {e}")
+        raise SystemExit(1) from e
+
+    if not parsed.section:
+        console.print(f"[red]Section required:[/red] {citation}")
+        console.print("[dim]Use format: ukpga/2003/1/section/62[/dim]")
+        raise SystemExit(1)
+
+    fetcher = UKLegislationFetcher()
+
+    with console.status("Fetching..."):
+        section = asyncio.run(fetcher.fetch_section(parsed))
+
+    if as_json:
+        console.print_json(section.model_dump_json())
+    else:
+        text_preview = section.text[:2000]
+        if len(section.text) > 2000:
+            text_preview += "..."
+
+        extent_str = ", ".join(section.extent) if section.extent else "UK-wide"
+
+        console.print(
+            Panel(
+                f"[bold]{section.citation.short_cite}[/bold]\n"
+                f"[dim]Extent: {extent_str}[/dim]\n\n"
+                f"[bold blue]{section.title}[/bold blue]\n\n"
+                f"{text_preview}\n\n"
+                f"[dim]Enacted: {section.enacted_date}[/dim]\n"
+                f"[dim]Source: {section.source_url}[/dim]",
+                title=section.citation.short_cite,
+            )
+        )
+
+
 if __name__ == "__main__":
     main()

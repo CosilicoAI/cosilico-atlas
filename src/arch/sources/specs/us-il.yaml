@@ -1,0 +1,36 @@
+# Illinois - Illinois Compiled Statutes (ILCS)
+# Spec version: 1.0
+
+jurisdiction: us-il
+name: Illinois
+source_type: html
+
+base_url: https://www.ilga.gov
+
+toc_urls:
+  - /legislation/ilcs/ilcs.asp
+
+# URL pattern: /legislation/ilcs/ilcs5.asp?ActID={ID}&ChapterID={CH}
+section_pattern: /legislation/ilcs/ilcs\d?\.asp
+
+crawler_type: html
+
+selectors:
+  content: body
+  title: title
+
+# Illinois organizes by chapter numbers (not titles)
+# Key policy-relevant chapters
+codes:
+  "35": "Revenue"
+  "305": "Public Aid Code"
+  "820": "Employment"
+  "105": "Schools"
+  "225": "Professions and Occupations"
+  "720": "Criminal Offenses"
+  "750": "Families"
+  "215": "Insurance"
+  "20": "Executive Branch"
+  "65": "Municipalities"
+  "330": "Human Services"
+  "410": "Public Health"

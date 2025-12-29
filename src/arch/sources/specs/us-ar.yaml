@@ -1,0 +1,55 @@
+# Arkansas - Arkansas Code
+# Spec version: 1.0
+
+jurisdiction: us-ar
+name: Arkansas
+source_type: html
+
+# Arkansas Code is hosted on Lexis, referenced via arkleg.state.ar.us
+base_url: https://www.arkleg.state.ar.us
+
+toc_urls:
+  - /ArkansasLaw
+
+# Arkansas Code uses Lexis interface - sections accessed via external link
+# Citation format: Arkansas Code section 4-88-1401 (Title-Chapter-Section)
+section_pattern: /Code/\d+-\d+-\d+
+
+crawler_type: playwright
+
+selectors:
+  content: body
+  title: title
+
+# Archive.org has some Arkansas Code volumes (2019, 2021)
+# archive_org_id: govlawarcode (partial availability)
+
+# Arkansas Code Titles (27 titles)
+codes:
+  "1": "General Provisions"
+  "2": "Agriculture"
+  "3": "Alcoholic Beverages"
+  "4": "Business and Commercial Law"
+  "5": "Criminal Offenses"
+  "6": "Local Government"
+  "7": "Consolidation of Local Governments"
+  "8": "Counties"
+  "9": "Courts and Court Procedures"
+  "10": "Decedents Estates"
+  "11": "Education"
+  "12": "Elections"
+  "13": "Eminent Domain"
+  "14": "Cities and Towns"
+  "15": "Natural Resources and Economic Development"
+  "16": "Practice, Procedure, and Courts"
+  "17": "Professions, Occupations, and Businesses"
+  "18": "Property"
+  "19": "Public Finance"
+  "20": "Public Health and Welfare"
+  "21": "Public Officers and Employees"
+  "22": "Labor and Industrial Relations"
+  "23": "Public Utilities and Regulated Industries"
+  "24": "Special Districts"
+  "25": "State Government"
+  "26": "Taxation"
+  "27": "Transportation"

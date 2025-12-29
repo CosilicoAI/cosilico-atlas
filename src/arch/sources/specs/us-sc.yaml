@@ -1,0 +1,86 @@
+# South Carolina - South Carolina Code of Laws
+# Spec version: 1.0
+
+jurisdiction: us-sc
+name: South Carolina
+source_type: html
+
+base_url: https://www.scstatehouse.gov
+
+toc_urls:
+  - /code/statmast.php
+
+# URL pattern: /code/title{N}.php (e.g., title12.php for taxation)
+section_pattern: /code/title\d+\.php
+
+crawler_type: html
+
+selectors:
+  content: body
+  title: title
+
+# South Carolina Code of Laws - 63 titles
+codes:
+  "1": "Administration of the Government"
+  "2": "General Assembly"
+  "3": "Governor"
+  "4": "Counties"
+  "5": "Municipalities"
+  "6": "Local Government - Provisions Applicable to Special Purpose Districts and Other Political Subdivisions"
+  "7": "Elections"
+  "8": "Public Officers and Employees"
+  "9": "Retirement Systems"
+  "10": "Public Buildings and Property"
+  "11": "Public Finance"
+  "12": "Taxation"
+  "13": "Planning, Research and Development"
+  "14": "Courts"
+  "15": "Civil Remedies and Procedure"
+  "16": "Crimes and Offenses"
+  "17": "Criminal Procedures"
+  "18": "Coroners"
+  "19": "Evidence"
+  "20": "Domestic Relations"
+  "21": "Fiduciaries"
+  "22": "Magistrates and Constables"
+  "23": "Law Enforcement and Public Safety"
+  "24": "Correctional Institutions"
+  "25": "Military, Civil Defense and Veterans Affairs"
+  "26": "Notaries Public and Acknowledgments"
+  "27": "Property and Conveyances"
+  "28": "Railroads"
+  "29": "Mechanics' Liens"
+  "30": "Public Records"
+  "31": "Housing and Redevelopment"
+  "32": "Contracts and Obligations Generally"
+  "33": "Corporations, Partnerships, and Associations"
+  "34": "Banking, Financial Institutions, and Money"
+  "35": "Securities"
+  "36": "Commercial Code"
+  "37": "Consumer Protection Code"
+  "38": "Insurance"
+  "39": "Trade and Commerce"
+  "40": "Professions and Occupations"
+  "41": "Labor and Employment"
+  "42": "Workers' Compensation"
+  "43": "Social Services"
+  "44": "Health"
+  "45": "Hotels, Motels, Restaurants and Boardinghouses"
+  "46": "Agriculture"
+  "47": "Animals, Livestock and Poultry"
+  "48": "Environmental Protection and Conservation"
+  "49": "Water, Irrigation and Drainage"
+  "50": "Fish, Game and Watercraft"
+  "51": "Parks, Recreation and Tourism"
+  "52": "Horse Racing"
+  "53": "Sundays, Holidays and Observances"
+  "54": "Aeronautics"
+  "55": "Highways, Bridges and Ferries"
+  "56": "Motor Vehicles"
+  "57": "Highways, Bridges and Ferries"
+  "58": "Public Utilities, Services and Carriers"
+  "59": "Education"
+  "60": "Libraries, Archives, Museums and Arts"
+  "61": "Alcohol and Alcoholic Beverages"
+  "62": "Probate Code"
+  "63": "South Carolina Children's Code"

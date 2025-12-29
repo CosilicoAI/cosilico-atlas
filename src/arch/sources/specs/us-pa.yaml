@@ -1,0 +1,55 @@
+# Pennsylvania - Pennsylvania Consolidated Statutes
+# Spec version: 1.0
+
+jurisdiction: us-pa
+name: Pennsylvania
+source_type: html
+
+# Official PA General Assembly statute site
+base_url: https://www.palegis.us
+
+toc_urls:
+  - /statutes/consolidated
+
+# Section URLs: /statutes/consolidated/view-statute?txtType=HTM&ttl={TITLE}&chpt={CHAPTER}&sctn={SECTION}
+# Example: /statutes/consolidated/view-statute?txtType=HTM&ttl=18&chpt=1&sctn=1
+section_pattern: /statutes/consolidated/view-statute\?.*ttl=\d+
+
+crawler_type: html
+
+selectors:
+  content: main, article, body
+  title: h1, title
+
+# Key titles for tax, welfare, labor, education
+codes:
+  "1": "General Provisions"
+  "2": "Administrative Law and Procedure"
+  "3": "Agriculture"
+  "4": "Amusements"
+  "7": "Banks and Banking"
+  "12": "Commerce and Trade"
+  "13": "Commercial Code"
+  "15": "Corporations and Unincorporated Associations"
+  "18": "Crimes and Offenses"
+  "20": "Decedents, Estates and Fiduciaries"
+  "23": "Domestic Relations"
+  "24": "Education"
+  "25": "Elections"
+  "30": "Fish"
+  "34": "Game"
+  "35": "Health and Safety"
+  "40": "Insurance"
+  "42": "Judiciary and Judicial Procedure"
+  "43": "Labor and Industry"
+  "44": "Law and Justice"
+  "51": "Military Affairs"
+  "53": "Municipalities Generally"
+  "62": "Procurement"
+  "66": "Public Utilities"
+  "67": "Public Welfare Code"
+  "71": "State Government"
+  "72": "Taxation and Fiscal Affairs"
+  "73": "Trade and Commerce"
+  "74": "Transportation"
+  "75": "Vehicles"

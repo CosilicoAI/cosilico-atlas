@@ -1,0 +1,40 @@
+# New Jersey - New Jersey Statutes Annotated (NJSA)
+# Spec version: 1.0
+
+jurisdiction: us-nj
+name: New Jersey
+source_type: html
+
+# Official NJ Legislature statute site
+base_url: https://lis.njleg.state.nj.us
+
+toc_urls:
+  - /nxt/gateway.dll?f=templates&fn=default.htm&vid=Publish:10.1048/Enu
+
+# Section URLs: /nxt/gateway.dll/statutes/{title}/{chapter}/{section}
+# Uses internal document IDs rather than citation numbers
+section_pattern: /nxt/gateway\.dll/statutes/\d+
+
+crawler_type: playwright  # Uses JavaScript-based navigation
+
+selectors:
+  content: body
+  title: title
+
+# Key titles for tax, welfare, labor, education
+# NJ uses Title:Chapter-Section format (e.g., 2C:52-1)
+codes:
+  "2A": "Administration of Civil and Criminal Justice"
+  "2C": "Code of Criminal Justice"
+  "9": "Children-Juvenile and Domestic Relations Courts"
+  "17": "Corporations and Institutions for Finance and Insurance"
+  "18A": "Education"
+  "26": "Health and Vital Statistics"
+  "30": "Institutions and Agencies"
+  "34": "Labor and Workmen's Compensation"
+  "43": "Pensions and Retirement and Unemployment Compensation"
+  "44": "Poor"
+  "52": "State Government, Departments and Officers"
+  "54": "Taxation"
+  "54A": "New Jersey Gross Income Tax Act"
+  "55": "Tenement Houses and Public Housing"

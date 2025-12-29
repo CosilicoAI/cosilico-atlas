@@ -1,0 +1,36 @@
+# Louisiana - Louisiana Revised Statutes
+# Spec version: 1.0
+
+jurisdiction: us-la
+name: Louisiana
+source_type: html
+
+base_url: https://www.legis.la.gov
+
+toc_urls:
+  - /legis/LawsContents.aspx
+
+# URL pattern: /legis/Laws_Toc.aspx?folder={folder}&title={title}
+section_pattern: /legis/Law\.aspx\?d=
+
+crawler_type: html
+
+selectors:
+  content: body
+  title: title
+
+# Louisiana organizes by Title number in Revised Statutes
+# Key policy-relevant titles
+codes:
+  "47": "Revenue and Taxation"
+  "46": "Public Welfare and Assistance"
+  "23": "Labor and Workers' Compensation"
+  "17": "Education"
+  "14": "Criminal Law"
+  "22": "Insurance"
+  "40": "Public Health and Safety"
+  "9": "Civil Code Ancillaries"
+  "33": "Municipalities and Parishes"
+  "37": "Professions and Occupations"
+  "51": "Trade and Commerce"
+  "32": "Motor Vehicles and Traffic Regulation"

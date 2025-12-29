@@ -1,0 +1,35 @@
+# Kansas - Kansas Statutes Annotated (KSA)
+# Spec version: 1.0
+
+jurisdiction: us-ks
+name: Kansas
+source_type: html
+
+base_url: https://www.kslegislature.gov
+
+toc_urls:
+  - /li/b2025_26/statute/
+
+# URL pattern: /li/b2025_26/statute/{chapter}_{article}_{section}_chapter/
+section_pattern: /li/b\d+_\d+/statute/\d+_\d+_\d+
+
+crawler_type: html
+
+selectors:
+  content: body
+  title: title
+
+# Kansas chapters - key policy-relevant ones
+codes:
+  "79": "Taxation"
+  "39": "Social Welfare"
+  "44": "Labor and Industries"
+  "72": "Schools"
+  "21": "Crimes and Punishments"
+  "40": "Insurance"
+  "19": "Counties and County Officers"
+  "23": "Domestic Relations"
+  "65": "Public Health"
+  "75": "State Departments; Public Officers and Employees"
+  "17": "Corporations"
+  "60": "Civil Procedure"

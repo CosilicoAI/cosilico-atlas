@@ -1,0 +1,36 @@
+# Indiana - Indiana Code
+# Spec version: 1.0
+
+jurisdiction: us-in
+name: Indiana
+source_type: html
+
+base_url: https://iga.in.gov
+
+toc_urls:
+  - /laws/2025/ic/titles
+
+# URL pattern: /laws/2025/ic/titles/{title}/articles/{article}/sections/{section}
+section_pattern: /laws/\d+/ic/titles/\d+
+
+# Indiana uses JavaScript SPA - requires Playwright
+crawler_type: playwright
+
+selectors:
+  content: body
+  title: title
+
+# Indiana Code titles - key policy-relevant ones
+codes:
+  "6": "Taxation"
+  "12": "Human Services"
+  "22": "Labor and Industrial Safety"
+  "20": "Education"
+  "35": "Criminal Law and Procedure"
+  "27": "Insurance"
+  "36": "Local Government"
+  "31": "Family Law and Juvenile Law"
+  "16": "Health"
+  "4": "State Offices and Administration"
+  "23": "Business and Other Associations"
+  "32": "Property"

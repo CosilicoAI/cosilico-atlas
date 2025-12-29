@@ -1,0 +1,33 @@
+# Idaho - Idaho Statutes
+# Spec version: 1.0
+
+jurisdiction: us-id
+name: Idaho
+source_type: html
+
+base_url: https://legislature.idaho.gov
+
+toc_urls:
+  - /statutesrules/idstat/
+
+# URL pattern: /statutesrules/idstat/Title{N}/T{N}CH{CH}/SECT{N}-{SECT}
+section_pattern: /statutesrules/idstat/Title\d+
+
+crawler_type: html
+
+selectors:
+  content: body
+  title: title
+
+# Idaho has 74 titles - key policy-relevant ones
+codes:
+  "63": "Revenue and Taxation"
+  "56": "Public Assistance and Welfare"
+  "72": "Workers' Compensation"
+  "44": "Labor"
+  "33": "Education"
+  "18": "Crimes and Punishments"
+  "41": "Insurance"
+  "31": "Counties and County Law"
+  "39": "Health and Safety"
+  "26": "Domestic Relations"

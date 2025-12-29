@@ -1,0 +1,38 @@
+# Maryland - Annotated Code of Maryland
+# Spec version: 1.0
+
+jurisdiction: us-md
+name: Maryland
+source_type: html
+
+base_url: https://mgaleg.maryland.gov
+
+toc_urls:
+  - /mgawebsite/laws/statutes
+
+# Section pages: /mgawebsite/Laws/StatuteText?article=gtg&section=XXX
+section_pattern: /mgawebsite/Laws/StatuteText\?article=
+
+crawler_type: html
+
+selectors:
+  content: body
+  title: title
+
+# Maryland uses article abbreviations instead of title numbers
+codes:
+  "gtg": "Tax - General"
+  "gtp": "Tax - Property"
+  "ghu": "Human Services"
+  "gfl": "Family Law"
+  "ghg": "Health - General"
+  "gcr": "Criminal Law"
+  "gcp": "Criminal Procedure"
+  "ged": "Education"
+  "gle": "Labor and Employment"
+  "gin": "Insurance"
+  "gsf": "State Finance and Procurement"
+  "gsg": "State Government"
+  "gho": "Health Occupations"
+  "gsp": "State Personnel and Pensions"
+  "gen": "Environment"

@@ -1,0 +1,141 @@
+# Wisconsin - Wisconsin Statutes
+# Spec version: 1.0
+
+jurisdiction: us-wi
+name: Wisconsin
+source_type: html
+
+base_url: https://docs.legis.wisconsin.gov
+
+toc_urls:
+  - /statutes/prefaces/toc
+
+# URL pattern: /statutes/statutes/{chapter} or /document/statutes/ch.{N}
+# Individual sections: /statutes/statutes/{chapter}/{section}
+section_pattern: /statutes/statutes/\d+
+
+crawler_type: html
+
+selectors:
+  content: body
+  title: title
+
+# Wisconsin Statutes - organized by chapters (1-995+)
+# Grouped by subject matter
+codes:
+  # State Sovereignty and Elections (1-12)
+  "1": "Sovereignty and Jurisdiction"
+  "5": "Elections - General Provisions; Ballots and Voting Systems"
+  "6": "Elections - The Electorate"
+  "7": "Elections - Election Officials; Divisions; Ballots; Polling Places"
+  "8": "Elections - Nominations; Primaries; Elections"
+  "9": "Recall; Vacancies"
+  "10": "Elections - Special Elections"
+  "11": "Campaign Financing"
+  "12": "Elections - Prohibited Practices"
+  # Legislature and State Organization (13-20)
+  "13": "Legislative Branch"
+  "14": "Constitutional Officers"
+  "15": "Structure of the Executive Branch"
+  "16": "Department of Administration"
+  "17": "State Officers - Resignations and Vacancies"
+  "18": "Public Debt"
+  "19": "General Duties of Public Officials"
+  "20": "Appropriations and Budget Management"
+  # Public Domain, Conservation, Natural Resources (23-34)
+  "23": "Conservation"
+  "26": "Protection of Forest Lands"
+  "27": "Public Parks and Recreation"
+  "29": "Wild Animals and Plants"
+  "30": "Navigable Waters, Harbors and Navigation"
+  "31": "Regulation of Dams and Bridges Affecting Navigable Waters"
+  "32": "Eminent Domain"
+  # Education (36-121)
+  "36": "University of Wisconsin System"
+  "38": "Technical College System"
+  "39": "Educational Agencies and Education Compacts"
+  "43": "Libraries"
+  "44": "Archaeology and History"
+  "45": "Veterans"
+  "46": "Social Services"
+  "47": "Vocational Rehabilitation"
+  "48": "Children's Code"
+  "49": "Public Assistance and Children and Family Services"
+  # Taxation (70-79)
+  "70": "General Property Taxes"
+  "71": "Income and Franchise Taxes"
+  "72": "Estate Tax"
+  "73": "Tax Appeals Commission and Department of Revenue"
+  "74": "Property Tax Collection"
+  "75": "Land Sold for Taxes"
+  "76": "Taxation of Utilities and Insurers"
+  "77": "Taxation of Forest Croplands; Other Coverages"
+  "78": "Motor Vehicle and General Aviation Fuel Taxes"
+  "79": "State Revenue Sharing"
+  # Transportation (80-98)
+  "84": "State Trunk Highways"
+  "85": "Department of Transportation"
+  "86": "Miscellaneous Highway Provisions"
+  "110": "Motor Vehicles - General Provisions"
+  "341": "Registration of Vehicles"
+  "342": "Vehicle Title and Anti-Theft Law"
+  "343": "Operators' Licenses"
+  "344": "Vehicles - Financial Responsibility"
+  "345": "Vehicles - Civil and Criminal Liability"
+  "346": "Rules of the Road"
+  "347": "Equipment of Vehicles"
+  # Regulation and Licensing (440-480)
+  "440": "Department of Safety and Professional Services"
+  "441": "Examining Board of Professional Land Surveyors"
+  "442": "Accounting Examining Board"
+  "443": "Architects, Landscape Architects, Professional Engineers, Designers and Professional Land Surveyors"
+  # Property (700-710)
+  "700": "Property - General Provisions"
+  "701": "Trusts"
+  "702": "Adoption of Estates in Land"
+  "703": "Condominiums"
+  "704": "Landlord and Tenant"
+  "706": "Conveyances of Real Property; Recording"
+  "707": "Time-Share Ownership"
+  "708": "Relocation Assistance"
+  # Domestic Relations and Family (765-770)
+  "765": "Marriage"
+  "766": "Marital Property"
+  "767": "Actions Affecting the Family"
+  "769": "Uniform Interstate Family Support"
+  # Courts, Civil Procedure (750-895)
+  "750": "Judicial Jurisdiction, Judgments, Form and Commencement of Actions"
+  "757": "Courts - General Provisions"
+  "758": "Judges"
+  "801": "Civil Procedure - Commencement of Action"
+  "802": "Civil Procedure - Pleadings, Motions and Pretrial Practice"
+  "803": "Civil Procedure - Parties"
+  "804": "Civil Procedure - Discovery"
+  "805": "Civil Procedure - Trial"
+  "806": "Civil Procedure - Judgment"
+  "807": "Civil Procedure - Miscellaneous Provisions"
+  # Criminal Law and Procedure (938-980)
+  "938": "Juvenile Justice Code"
+  "939": "Crimes - General Provisions"
+  "940": "Crimes Against Life and Bodily Security"
+  "941": "Crimes Against Public Health and Safety"
+  "942": "Crimes Against Reputation, Privacy and Civil Liberties"
+  "943": "Crimes Against Property"
+  "944": "Crimes Against Sexual Morality"
+  "945": "Gambling"
+  "946": "Crimes Against Government and Its Administration"
+  "947": "Crimes Against Public Peace, Order and Other Interests"
+  "948": "Crimes Against Children"
+  "949": "Crime Victim Compensation"
+  "950": "Rights of Victims and Witnesses of Crime"
+  "967": "Criminal Procedure - General Provisions"
+  "968": "Criminal Procedure - Commencement of Criminal Proceedings"
+  "969": "Criminal Procedure - Preliminary Proceedings"
+  "970": "Criminal Procedure - Preliminary Examination"
+  "971": "Criminal Procedure - Proceedings Before and at Trial"
+  "972": "Criminal Procedure - Trial"
+  "973": "Criminal Procedure - Sentencing"
+  "974": "Criminal Procedure - Appeals and Writs of Error"
+  "975": "Criminal Procedure - Mental Deficiency or Disease"
+  "976": "Uniform Act on Fresh Pursuit; Extradition; Rendition of Prisoners as Witnesses"
+  "980": "Sexually Violent Person Commitments"

@@ -1,0 +1,38 @@
+# Mississippi - Mississippi Code 1972
+# Spec version: 1.0
+
+jurisdiction: us-ms
+name: Mississippi
+source_type: archive_org
+
+# Archive.org bulk download
+crawler_type: archive_org
+archive_org_id: govlawmscode197201
+
+# Official access is via LexisNexis
+base_url: https://advance.lexis.com
+
+# Alternate source for web crawling
+alternate_base_url: https://law.justia.com/codes/mississippi/
+
+section_pattern: null  # Not used for Archive.org
+
+selectors:
+  content: body
+  title: title
+
+# Mississippi uses title numbers
+codes:
+  "27": "Taxation and Finance"
+  "43": "Public Welfare"
+  "41": "Public Health"
+  "37": "Education"
+  "71": "Labor and Industry"
+  "73": "Professions and Vocations"
+  "83": "Insurance"
+  "97": "Crimes"
+  "99": "Criminal Procedure"
+  "93": "Domestic Relations"
+  "91": "Courts"
+  "35": "War Veterans and Pensions"
+  "49": "Conservation and Ecology"

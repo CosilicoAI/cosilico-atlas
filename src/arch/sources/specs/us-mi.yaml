@@ -1,0 +1,41 @@
+# Michigan - Michigan Compiled Laws (MCL)
+# Spec version: 1.0
+
+jurisdiction: us-mi
+name: Michigan
+source_type: html
+
+base_url: https://www.legislature.mi.gov
+
+toc_urls:
+  - /Laws/ChapterIndex
+
+# Section pages: /Laws/MCL?objectName=MCL-XXX
+section_pattern: /Laws/MCL\?objectName=
+
+crawler_type: html
+
+selectors:
+  content: body
+  title: title
+
+codes:
+  "205": "Taxation"
+  "206": "Income Tax Act of 1967"
+  "207": "Taxation"
+  "208": "Business Tax"
+  "211": "Taxation of Real and Personal Property"
+  "400": "Social Services"
+  "401": "The Poor Law"
+  "408": "Labor"
+  "418": "Worker's Disability Compensation"
+  "421": "Employment Security"
+  "423": "Labor Disputes and Employment Relations"
+  "380": "The Revised School Code"
+  "388": "Schools and School Aid"
+  "389": "Community Colleges"
+  "390": "Universities and Colleges"
+  "750": "Michigan Penal Code"
+  "752": "Crimes and Offenses"
+  "760": "Code of Criminal Procedure"
+  "500": "Insurance Code"

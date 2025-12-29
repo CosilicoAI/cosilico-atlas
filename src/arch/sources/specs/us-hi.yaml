@@ -1,0 +1,61 @@
+# Hawaii - Hawaii Revised Statutes (HRS)
+# Spec version: 1.0
+
+jurisdiction: us-hi
+name: Hawaii
+source_type: html
+
+base_url: https://www.capitol.hawaii.gov
+
+toc_urls:
+  - /hrsall/
+  - /hrscurrent/
+
+# HRS sections accessed via ASP pages - may require Playwright
+# Divisions and volumes at /hrscurrent/ directory
+section_pattern: /hrs\d+/HRS_\d+
+
+crawler_type: playwright
+
+selectors:
+  content: body
+  title: title
+
+# Hawaii Revised Statutes is organized by Divisions and Volumes
+# 14 volumes covering different areas of law
+codes:
+  # Division 1 - Government
+  "1": "General Provisions (Ch. 1-7)"
+  "2": "Legislature (Ch. 21-26)"
+  "3": "Governor (Ch. 26)"
+  "4": "State Organization (Ch. 26-43)"
+
+  # Division 2 - Business
+  "5": "Business Regulation (Ch. 414-490)"
+  "6": "Financial Institutions (Ch. 403-414D)"
+
+  # Division 3 - Property and Family
+  "7": "Property (Ch. 501-531)"
+  "8": "Domestic Relations (Ch. 560-580)"
+
+  # Division 4 - Courts and Procedure
+  "9": "Judiciary (Ch. 601-667)"
+  "10": "Civil Remedies and Procedure (Ch. 634-669)"
+  "11": "Evidence (Ch. 621-627)"
+
+  # Division 5 - Crimes
+  "12": "Penal Code (Ch. 701-853)"
+
+  # Key Title Numbers
+  "235": "Income Tax Law"
+  "237": "General Excise Tax Law"
+  "238": "Use Tax Law"
+  "239": "Public Service Company Tax Law"
+  "241": "Banks and Other Financial Corporations Tax"
+  "243": "Fuel Tax Law"
+  "246": "Real Property Tax Law"
+  "346": "Department of Human Services"
+  "383": "Hawaii Employment Security Law"
+  "386": "Workers Compensation Law"
+  "392": "Temporary Disability Insurance"
+  "393": "Prepaid Health Care Act"

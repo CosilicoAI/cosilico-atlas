@@ -1,0 +1,53 @@
+# California - California Codes
+# Spec version: 1.0
+
+jurisdiction: us-ca
+name: California
+source_type: html
+
+base_url: https://leginfo.legislature.ca.gov
+
+toc_urls:
+  - /faces/codes.xhtml
+
+# California code sections follow pattern: /faces/codes_displaySection.xhtml?sectionNum=123&lawCode=PEN
+section_pattern: /faces/codes_displaySection\.xhtml\?.*lawCode=\w+
+
+crawler_type: html
+
+selectors:
+  content: body
+  title: title
+
+# California has 29 separate statutory codes
+codes:
+  "BPC": "Business and Professions Code"
+  "CCP": "Code of Civil Procedure"
+  "CIV": "Civil Code"
+  "COM": "Commercial Code"
+  "CONS": "California Constitution"
+  "CORP": "Corporations Code"
+  "EDC": "Education Code"
+  "ELEC": "Elections Code"
+  "EVID": "Evidence Code"
+  "FAC": "Food and Agricultural Code"
+  "FAM": "Family Code"
+  "FGC": "Fish and Game Code"
+  "FIN": "Financial Code"
+  "GOV": "Government Code"
+  "HNC": "Harbors and Navigation Code"
+  "HSC": "Health and Safety Code"
+  "INS": "Insurance Code"
+  "LAB": "Labor Code"
+  "MVC": "Military and Veterans Code"
+  "PCC": "Public Contract Code"
+  "PEN": "Penal Code"
+  "PROB": "Probate Code"
+  "PRC": "Public Resources Code"
+  "PUC": "Public Utilities Code"
+  "RTC": "Revenue and Taxation Code"
+  "SHC": "Streets and Highways Code"
+  "UIC": "Unemployment Insurance Code"
+  "VEH": "Vehicle Code"
+  "WAT": "Water Code"
+  "WIC": "Welfare and Institutions Code"

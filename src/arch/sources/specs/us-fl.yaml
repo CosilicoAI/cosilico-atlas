@@ -1,0 +1,73 @@
+# Florida - Florida Statutes
+# Spec version: 1.0
+
+jurisdiction: us-fl
+name: Florida
+source_type: html
+
+base_url: https://www.leg.state.fl.us
+
+toc_urls:
+  - /statutes/
+
+# Florida statute section URLs: /Statutes/index.cfm?App_mode=Display_Statute&URL=0700-0799/0784/Sections/0784.03.html
+section_pattern: /Statutes/index\.cfm\?.*Display_Statute.*
+
+crawler_type: html
+
+selectors:
+  content: body
+  title: title
+
+# Florida Statutes are organized by 49 Titles with Roman numerals
+# Each title contains multiple chapters
+codes:
+  "I": "Construction of Statutes (Ch. 1-2)"
+  "II": "State Organization (Ch. 6-8)"
+  "III": "Legislative Branch; Commissions (Ch. 10-11)"
+  "IV": "Executive Branch (Ch. 14-24)"
+  "V": "Judicial Branch (Ch. 25-44)"
+  "VI": "Civil Practice and Procedure (Ch. 45-88)"
+  "VII": "Evidence (Ch. 90-92)"
+  "VIII": "Limitations (Ch. 95)"
+  "IX": "Electors and Elections (Ch. 97-107)"
+  "X": "Public Officers, Employees, and Records (Ch. 110-122)"
+  "XI": "County Organization and Intergovernmental Relations (Ch. 124-165)"
+  "XII": "Municipalities (Ch. 166-185)"
+  "XIII": "Planning and Development (Ch. 186-191)"
+  "XIV": "Taxation and Finance (Ch. 192-220)"
+  "XV": "Homestead and Exemptions (Ch. 222)"
+  "XVI": "Aviation (Ch. 330-333)"
+  "XVII": "Military Affairs and Related Matters (Ch. 250-252)"
+  "XVIII": "Public Lands and Property (Ch. 253-274)"
+  "XIX": "Public Business (Ch. 279-290)"
+  "XX": "Veterans (Ch. 292-296)"
+  "XXI": "Drainage (Ch. 298)"
+  "XXII": "Ports and Harbors (Ch. 308-315)"
+  "XXIII": "Motor Vehicles (Ch. 316-325)"
+  "XXIV": "Vessels (Ch. 326-328)"
+  "XXV": "Aviation (Ch. 330-333)"
+  "XXVI": "Public Transportation (Ch. 334-349)"
+  "XXVII": "Railroads and Other Regulated Utilities (Ch. 350-368)"
+  "XXVIII": "Natural Resources; Conservation, Reclamation, and Use (Ch. 369-380)"
+  "XXIX": "Public Health (Ch. 381-408)"
+  "XXX": "Social Welfare (Ch. 409-430)"
+  "XXXI": "Labor (Ch. 435-452)"
+  "XXXII": "Regulation of Professions and Occupations (Ch. 454-493)"
+  "XXXIII": "Regulation of Trade, Commerce, Investments, and Solicitations (Ch. 494-560)"
+  "XXXIV": "Alcoholic Beverages and Tobacco (Ch. 561-569)"
+  "XXXV": "Agriculture, Horticulture, and Animal Industry (Ch. 570-604)"
+  "XXXVI": "Business Organizations (Ch. 605-623)"
+  "XXXVII": "Insurance (Ch. 624-651)"
+  "XXXVIII": "Banks and Banking (Ch. 655-667)"
+  "XXXIX": "Commercial Relations (Ch. 668-688)"
+  "XL": "Real and Personal Property (Ch. 689-723)"
+  "XLI": "Fraudulent Practices (Ch. 725-727)"
+  "XLII": "Estates and Trusts (Ch. 731-740)"
+  "XLIII": "Domestic Relations (Ch. 741-753)"
+  "XLIV": "Civil Rights (Ch. 760-765)"
+  "XLV": "Torts (Ch. 766-774)"
+  "XLVI": "Crimes (Ch. 775-896)"
+  "XLVII": "Criminal Procedure and Corrections (Ch. 900-985)"
+  "XLVIII": "Early Learning-20 Education Code (Ch. 1000-1013)"
+  "XLIX": "Education (Ch. 1001-1013)"

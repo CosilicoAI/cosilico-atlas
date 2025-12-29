@@ -1,0 +1,48 @@
+# Alaska - Alaska Statutes
+# Spec version: 1.0
+
+jurisdiction: us-ak
+name: Alaska
+source_type: html
+
+base_url: https://www.akleg.gov
+
+toc_urls:
+  - /basis/statutes.asp
+
+# Alaska uses JavaScript navigation - requires Playwright
+# Section URLs use anchor fragments like #01.10.010
+section_pattern: /basis/statutes\.asp#\d+\.\d+\.\d+
+
+crawler_type: playwright
+
+selectors:
+  content: body
+  title: title
+
+# Key Alaska Statute Titles
+codes:
+  "1": "General Provisions"
+  "4": "Alcoholic Beverages"
+  "6": "Banks and Financial Institutions"
+  "9": "Code of Civil Procedure"
+  "10": "Corporations and Associations"
+  "11": "Criminal Law"
+  "12": "Code of Criminal Procedure"
+  "14": "Education, Libraries, and Museums"
+  "15": "Elections"
+  "18": "Health, Safety, and Housing"
+  "21": "Liens"
+  "22": "Judiciary"
+  "23": "Labor and Workers Compensation"
+  "25": "Marital and Domestic Relations"
+  "26": "Military Affairs and Civil Defense"
+  "28": "Motor Vehicles"
+  "29": "Municipal Government"
+  "37": "Public Finance"
+  "39": "Public Officers and Employees"
+  "42": "Public Utilities and Carriers"
+  "43": "Revenue and Taxation"
+  "44": "State Government"
+  "45": "Trade and Commerce"
+  "47": "Welfare, Social Services, and Institutions"

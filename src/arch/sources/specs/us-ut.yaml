@@ -1,0 +1,85 @@
+# Utah - Utah Code
+# Spec version: 1.0
+
+jurisdiction: us-ut
+name: Utah
+source_type: html
+
+base_url: https://le.utah.gov
+
+toc_urls:
+  - /xcode/code.html
+
+# URL pattern: /xcode/Title{N}/{N}.html (e.g., /xcode/Title59/59.html for Revenue and Taxation)
+# Chapter level: /xcode/Title{N}/Chapter{M}/{N}-{M}.html
+section_pattern: /xcode/Title\d+[A-Z]?/
+
+crawler_type: html
+
+selectors:
+  content: body
+  title: title
+
+# Utah Code titles (numbered with some lettered subdivisions)
+codes:
+  "4": "Utah Agricultural Code"
+  "7": "Financial Institutions"
+  "9": "Heritage, Arts, Libraries"
+  "10": "Utah Municipal Code"
+  "11": "Cities, Counties, and Local Taxing Units"
+  "13": "Commerce and Trade"
+  "15": "Contracts and Obligations in General"
+  "15A": "State Construction and Fire Codes Act"
+  "16": "Corporations"
+  "17": "Counties"
+  "17B": "Limited Purpose Local Government Entities - Special Districts"
+  "17C": "Limited Purpose Local Government Entities - Community Development and Renewal Agencies Act"
+  "17D": "Limited Purpose Local Government Entities - Other Entities"
+  "19": "Environmental Quality Code"
+  "20A": "Election Code"
+  "23A": "Wildlife Resources Act"
+  "26": "Utah Health Code"
+  "26A": "Local Health Authorities"
+  "26B": "Utah Health and Human Services Codes"
+  "31A": "Insurance Code"
+  "34": "Labor in General"
+  "34A": "Utah Labor Code"
+  "35A": "Utah Workforce Services Code"
+  "36": "Legislature"
+  "38": "Liens"
+  "40": "Mines and Mining"
+  "41": "Motor Vehicles"
+  "46": "Notarization and Authentication of Documents"
+  "48": "Partnership - Unincorporated Business Entities"
+  "49": "Utah State Retirement and Insurance Benefit Act"
+  "51": "Public Funds and Accounts"
+  "52": "Public Officers"
+  "53": "Public Safety Code"
+  "53B": "State System of Higher Education"
+  "53E": "Public Education System - State Administration"
+  "53F": "Public Education System - Funding"
+  "53G": "Public Education System - Local Administration"
+  "58": "Occupations and Professions"
+  "59": "Revenue and Taxation"
+  "61": "Securities Division - Real Estate Division"
+  "62A": "Utah Human Services Code"
+  "63A": "Utah Government Operations Code"
+  "63B": "Bonds"
+  "63C": "State Commissions and Councils Code"
+  "63G": "General Government"
+  "63I": "Oversight"
+  "63J": "Budgeting"
+  "63N": "Economic Opportunity Act"
+  "64": "State Institutions"
+  "65A": "Forestry, Fire, and State Lands"
+  "67": "State Officers and Employees"
+  "68": "Statutes"
+  "70A": "Uniform Commercial Code"
+  "70C": "Utah Consumer Credit Code"
+  "75": "Utah Uniform Probate Code"
+  "76": "Utah Criminal Code"
+  "77": "Utah Code of Criminal Procedure"
+  "78A": "Judiciary and Judicial Administration"
+  "78B": "Judicial Code"
+  "80": "Utah Juvenile Code"
+  "81": "Utah Domestic Relations Code"

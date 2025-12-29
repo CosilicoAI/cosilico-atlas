@@ -1,0 +1,48 @@
+# Missouri - Revised Statutes of Missouri (RSMo)
+# Spec version: 1.0
+
+jurisdiction: us-mo
+name: Missouri
+source_type: html
+
+base_url: https://revisor.mo.gov
+
+toc_urls:
+  - /main/Home.aspx
+
+# Section pages: /main/OneSection.aspx?section=XXX.XXX
+section_pattern: /main/OneSection\.aspx\?section=
+
+crawler_type: html
+
+selectors:
+  content: body
+  title: title
+
+# Missouri uses chapter numbers
+codes:
+  "135": "Tax Relief"
+  "136": "Collection of State Taxes"
+  "137": "Assessment and Levy of Property Taxes"
+  "142": "Motor Fuel Tax"
+  "143": "Income Tax"
+  "144": "Sales and Use Tax"
+  "147": "Corporation Franchise Taxes"
+  "149": "Cigarette Tax"
+  "191": "Health and Welfare"
+  "192": "Department of Health and Senior Services"
+  "207": "Family Support Division and Children's Division"
+  "208": "Social Services"
+  "210": "Child Protection and Reformation"
+  "285": "Employers and Employees Generally"
+  "287": "Workers' Compensation Law"
+  "288": "Employment Security"
+  "290": "Wages, Hours and Dismissal Rights"
+  "160": "Schools - General Provisions"
+  "162": "School Districts"
+  "163": "School Revenue"
+  "174": "State Colleges and Universities"
+  "556": "Criminal Code - Preliminary Provisions"
+  "565": "Offenses Against the Person"
+  "570": "Stealing and Related Offenses"
+  "579": "Controlled Substance Offenses"

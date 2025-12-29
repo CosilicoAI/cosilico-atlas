@@ -1,0 +1,37 @@
+# Nebraska - Nebraska Revised Statutes
+# Spec version: 1.0
+
+jurisdiction: us-ne
+name: Nebraska
+source_type: html
+
+base_url: https://nebraskalegislature.gov
+
+toc_urls:
+  - /laws/browse-statutes.php
+
+# Section pages: /laws/statutes.php?statute=XX-XXXX
+section_pattern: /laws/statutes\.php\?statute=
+
+crawler_type: html
+
+selectors:
+  content: body
+  title: title
+
+# Nebraska uses chapter numbers
+codes:
+  "77": "Revenue and Taxation"
+  "68": "Public Assistance"
+  "71": "Public Health and Welfare"
+  "48": "Labor"
+  "79": "Schools"
+  "85": "State University, State Colleges, and Postsecondary Education"
+  "28": "Crimes and Punishments"
+  "29": "Criminal Procedure"
+  "44": "Insurance"
+  "42": "Husband and Wife"
+  "43": "Infants and Juveniles"
+  "81": "State Administrative Departments"
+  "72": "State Lands and Funds"
+  "84": "State Officers"

@@ -1,0 +1,38 @@
+# New Hampshire - Revised Statutes Annotated (RSA)
+# Spec version: 1.0
+
+jurisdiction: us-nh
+name: New Hampshire
+source_type: html
+
+# Official RSA site hosted by NH General Court
+base_url: https://gc.nh.gov
+
+toc_urls:
+  - /rsa/html/nhtoc.htm
+
+# Section URLs: /rsa/html/{TITLE}/{CHAPTER}/{CHAPTER}-{SECTION}.htm
+# Examples:
+#   /rsa/html/V/77-A/77-A-1.htm (Title V, Chapter 77-A, Section 1)
+#   /rsa/html/XXI/259/259-3.htm (Title XXI, Chapter 259, Section 3)
+section_pattern: /rsa/html/[IVXL]+/[\d\w-]+/[\d\w-]+\.htm
+
+crawler_type: html
+
+selectors:
+  content: body
+  title: title
+
+# Key titles for tax, welfare, labor, education
+codes:
+  "V": "Taxation"
+  "XII": "Public Safety and Welfare"
+  "XXIII": "Labor"
+  "XV": "Education"
+  "XXVII": "Corporations, Associations, and Proprietors"
+  "XXXVIII": "Liens"
+  "LXII": "Criminal Code"
+  "XXX": "Occupations and Professions"
+  "XXXIV": "Public Utilities"
+  "XXXV": "Domestic Relations"
+  "XL": "Agriculture, Horticulture and Animal Husbandry"

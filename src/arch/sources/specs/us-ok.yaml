@@ -1,0 +1,42 @@
+# Oklahoma - Oklahoma Statutes
+# Spec version: 1.0
+
+jurisdiction: us-ok
+name: Oklahoma
+source_type: html
+
+# Oklahoma State Courts Network (OSCN) - official citationized statutes
+base_url: https://www.oscn.net
+
+toc_urls:
+  - /applications/oscn/index.asp?level=1&ftdb=STOKST
+
+# Section URLs: /applications/oscn/DeliverDocument.asp?CiteID={ID}
+# Also: Index.asp?ftdb=STOKST{TITLE}&level=1
+section_pattern: /applications/oscn/.*CiteID=\d+|DeliverDocument.*CiteID
+
+crawler_type: html
+
+selectors:
+  content: body
+  title: title
+
+# Key titles for tax, welfare, labor, education
+codes:
+  "10": "Children"
+  "10A": "Children and Juvenile Code"
+  "12": "Civil Procedure"
+  "14A": "Consumer Credit Code"
+  "21": "Crimes and Punishments"
+  "22": "Criminal Procedure"
+  "25": "Definitions and General Provisions"
+  "36": "Insurance"
+  "40": "Labor"
+  "43": "Marriage and Family"
+  "56": "Poor Persons"
+  "63": "Public Health and Safety"
+  "68": "Revenue and Taxation"
+  "70": "Schools"
+  "72": "Social Security - Public Welfare"
+  "74": "State Government"
+  "85A": "Workers Compensation"

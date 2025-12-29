@@ -1,0 +1,38 @@
+# Montana - Montana Code Annotated (MCA)
+# Spec version: 1.0
+
+jurisdiction: us-mt
+name: Montana
+source_type: html
+
+base_url: https://archive.legmt.gov
+
+toc_urls:
+  - /bills/mca/index.html
+
+# Section pages: /bills/mca/title_XXXX/chapter_XXX/part_XXX/section_XXXX.html
+section_pattern: /bills/mca/title_\d+/chapter_\d+
+
+crawler_type: html
+
+selectors:
+  content: body
+  title: title
+
+codes:
+  "15": "Taxation"
+  "39": "Labor"
+  "50": "Health and Safety"
+  "52": "Family Services"
+  "53": "Social Services and Institutions"
+  "20": "Education"
+  "44": "Law Enforcement"
+  "45": "Crimes"
+  "46": "Criminal Procedure"
+  "33": "Insurance"
+  "40": "Family Law"
+  "41": "Minors"
+  "42": "Adoption"
+  "49": "Human Rights"
+  "69": "Public Utilities"
+  "72": "Estates, Trusts, Fiduciaries"

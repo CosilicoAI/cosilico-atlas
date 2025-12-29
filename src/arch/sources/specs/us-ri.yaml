@@ -1,0 +1,72 @@
+# Rhode Island - Rhode Island General Laws
+# Spec version: 1.0
+
+jurisdiction: us-ri
+name: Rhode Island
+source_type: html
+
+base_url: https://webserver.rilegislature.gov
+
+toc_urls:
+  - /Statutes/
+
+# URL pattern: /Statutes/TITLE{N}/INDEX.HTM (e.g., TITLE44/INDEX.HTM for taxation)
+section_pattern: /Statutes/TITLE[\d\.]+/
+
+crawler_type: html
+
+selectors:
+  content: body
+  title: title
+
+# Key Rhode Island General Laws titles
+codes:
+  "1": "Aeronautics"
+  "2": "Agriculture and Forestry"
+  "3": "Alcoholic Beverages"
+  "4": "Animals and Animal Husbandry"
+  "5": "Businesses and Professions"
+  "6": "Commercial Law - General Regulatory Provisions"
+  "6A": "Uniform Commercial Code"
+  "7": "Corporations, Associations, and Partnerships"
+  "8": "Courts and Civil Procedure - Courts"
+  "9": "Courts and Civil Procedure - Procedure Generally"
+  "10": "Courts and Civil Procedure - Actions and Proceedings"
+  "11": "Criminal Offenses"
+  "12": "Criminal Procedure"
+  "13": "Delinquent and Dependent Children"
+  "14": "Youthful Offenders"
+  "15": "Domestic Relations"
+  "16": "Education"
+  "17": "Elections"
+  "18": "Fiduciaries"
+  "19": "Financial Institutions"
+  "20": "Fish and Wildlife"
+  "21": "Food and Drugs"
+  "22": "Health and Safety"
+  "23": "Health and Safety"
+  "24": "Highways"
+  "25": "Holidays and Days of Special Observance"
+  "26": "Mental Health Law"
+  "27": "Insurance"
+  "28": "Labor and Labor Relations"
+  "29": "Military Affairs and Defense"
+  "30": "Motor and Other Vehicles"
+  "31": "Motor and Other Vehicles"
+  "32": "Parks and Recreation"
+  "33": "Probate Practice and Procedure"
+  "34": "Property"
+  "35": "Public Finance"
+  "36": "Public Officers and Employees"
+  "37": "Public Property and Works"
+  "38": "Public Records"
+  "39": "Public Utilities and Carriers"
+  "40": "Human Services"
+  "40.1": "Behavioral Healthcare, Developmental Disabilities and Hospitals"
+  "41": "Sports"
+  "42": "State Affairs and Government"
+  "43": "State Lottery"
+  "44": "Taxation"
+  "45": "Towns and Cities"
+  "46": "Waters and Navigation"
+  "47": "Weights, Measures and Standards"

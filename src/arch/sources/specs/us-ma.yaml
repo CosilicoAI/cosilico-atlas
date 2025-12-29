@@ -1,0 +1,38 @@
+# Massachusetts - Massachusetts General Laws
+# Spec version: 1.0
+
+jurisdiction: us-ma
+name: Massachusetts
+source_type: html
+
+base_url: https://malegislature.gov
+
+toc_urls:
+  - /Laws/GeneralLaws
+
+# URL pattern: /Laws/GeneralLaws/Part{I-V}/Title{Roman}/Chapter{N}/Section{N}
+section_pattern: /Laws/GeneralLaws/Part
+
+crawler_type: html
+
+selectors:
+  content: body
+  title: title
+
+# Massachusetts organizes by Part > Title > Chapter
+# Key policy-relevant chapters
+codes:
+  "62": "Taxation of Incomes"
+  "62B": "Withholding of Taxes on Wages and Declarations of Estimated Income Tax"
+  "63": "Taxation of Corporations"
+  "118": "Public Assistance"
+  "118E": "MassHealth"
+  "149": "Labor and Industries"
+  "71": "Public Schools"
+  "265": "Crimes Against the Person"
+  "175": "Insurance"
+  "111": "Public Health"
+  "208": "Domestic Relations"
+  "151A": "Unemployment Insurance"
+  "152": "Workers' Compensation"
+  "40": "Powers and Duties of Cities and Towns"

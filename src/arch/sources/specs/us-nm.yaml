@@ -1,0 +1,37 @@
+# New Mexico - New Mexico Statutes Annotated (NMSA 1978)
+# Spec version: 1.0
+
+jurisdiction: us-nm
+name: New Mexico
+source_type: html
+
+# Official NMOneSource site by NM Compilation Commission
+base_url: https://nmonesource.com
+
+toc_urls:
+  - /nmos/nmsa/en/nav.do
+
+# Section URLs: /w/nmos/Chapter-{NUM}-NMSA-1978
+# Example: /w/nmos/Chapter-7-NMSA-1978 (Taxation)
+section_pattern: /w/nmos/Chapter-\d+-NMSA-1978
+
+crawler_type: playwright  # JavaScript SPA using Lexum's Norma platform
+
+selectors:
+  content: main, article, body
+  title: h1, title
+
+# Key chapters for tax, welfare, labor, education
+codes:
+  "7": "Taxation"
+  "22": "Public Schools"
+  "27": "Public Assistance"
+  "28": "Public Welfare"
+  "30": "Criminal Offenses"
+  "31": "Criminal Procedure"
+  "40": "Domestic Affairs"
+  "50": "Employment Law"
+  "51": "Workers Compensation"
+  "52": "Unemployment Compensation"
+  "59A": "Insurance Code"
+  "66": "Motor Vehicles"

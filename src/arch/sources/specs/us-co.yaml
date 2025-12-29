@@ -1,0 +1,73 @@
+# Colorado - Colorado Revised Statutes (CRS)
+# Spec version: 1.0
+
+jurisdiction: us-co
+name: Colorado
+source_type: html
+
+base_url: https://leg.colorado.gov
+
+toc_urls:
+  - /colorado-revised-statutes
+
+# Bulk downloads available at: https://olls.info/crs/crs2025-title-{NUMBER}.{FORMAT}
+# Formats: HTM, PDF, DOCX
+download_url_pattern: https://olls.info/crs/crs2025-title-{title}.htm
+
+# CRS sections accessed via LexisNexis or downloads
+section_pattern: /crs\d+-title-\d+
+
+crawler_type: html
+
+selectors:
+  content: body
+  title: title
+
+# Colorado Revised Statutes Titles
+codes:
+  "1": "Elections"
+  "2": "Legislative"
+  "3": "United States"
+  "4": "Uniform Commercial Code"
+  "5": "Consumer Credit Code"
+  "6": "Consumer and Commercial Affairs"
+  "7": "Corporations and Associations"
+  "8": "Labor and Industry"
+  "9": "Safety - Industrial and Commercial"
+  "10": "Insurance"
+  "11": "Financial Institutions"
+  "12": "Professions and Occupations"
+  "13": "Courts and Court Procedure"
+  "14": "Domestic Matters"
+  "15": "Probate, Trusts, and Fiduciaries"
+  "16": "Criminal Proceedings"
+  "17": "Corrections"
+  "18": "Criminal Code"
+  "19": "Childrens Code"
+  "20": "District Attorneys"
+  "21": "Public Defender"
+  "22": "Education"
+  "23": "Postsecondary Education"
+  "24": "Government - State"
+  "25": "Public Health and Environment"
+  "25.5": "Health Care Policy and Financing"
+  "26": "Human Services"
+  "26.5": "Early Childhood"
+  "27": "Behavioral Health"
+  "28": "Military and Veterans"
+  "29": "Government - Local"
+  "30": "County Government"
+  "31": "Municipal Government"
+  "32": "Special Districts"
+  "33": "Parks and Wildlife"
+  "34": "Mineral Resources"
+  "35": "Agriculture"
+  "36": "Natural Resources"
+  "37": "Water and Irrigation"
+  "38": "Property - Real and Personal"
+  "39": "Taxation"
+  "40": "Utilities"
+  "41": "Aeronautics"
+  "42": "Vehicles and Traffic"
+  "43": "Transportation"
+  "44": "Revenue - Regulation and Licensing"

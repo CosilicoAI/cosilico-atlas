@@ -1,0 +1,90 @@
+# South Dakota - South Dakota Codified Laws
+# Spec version: 1.0
+
+jurisdiction: us-sd
+name: South Dakota
+source_type: html
+
+base_url: https://sdlegislature.gov
+
+toc_urls:
+  - /Statutes
+
+# URL pattern: /Statutes/{title} (e.g., /Statutes/10 for Taxation)
+# Also supports: /Statutes/{title}-{chapter} and /Statutes/{title}-{chapter}-{section}
+section_pattern: /Statutes/\d+
+
+# JavaScript SPA - requires Playwright
+crawler_type: playwright
+
+selectors:
+  content: body
+  title: title
+
+# South Dakota Codified Laws - approximately 67 titles
+codes:
+  "1": "State Affairs and Government"
+  "2": "Legislature and Statutes"
+  "3": "Public Officers and Employees"
+  "4": "Public Fiscal Administration"
+  "5": "Public Property, Purchases and Contracts"
+  "6": "Local Government Generally"
+  "7": "Counties"
+  "8": "Townships"
+  "9": "Municipal Government"
+  "10": "Taxation"
+  "11": "Planning, Zoning and Housing Programs"
+  "12": "Elections"
+  "13": "Education"
+  "14": "Libraries"
+  "15": "Civil Procedure"
+  "16": "Courts and Judiciary"
+  "17": "Notice and Publication"
+  "18": "Oaths and Acknowledgments"
+  "19": "Evidence"
+  "20": "Personal Rights and Obligations"
+  "21": "Judicial Remedies"
+  "22": "Crimes"
+  "23": "Law Enforcement"
+  "23A": "Criminal Procedure"
+  "24": "Prisons and Reformatories"
+  "25": "Domestic Relations"
+  "26": "Minors"
+  "28": "Welfare"
+  "29": "Estates of Decedents"
+  "29A": "Uniform Probate Code"
+  "30": "Trust Administration"
+  "31": "Fiduciaries"
+  "32": "Motor Vehicles"
+  "33": "Highways"
+  "34": "Public Health"
+  "34A": "Environmental Protection"
+  "35": "Alcoholic Beverages"
+  "36": "Professions and Occupations"
+  "37": "Trade Regulation"
+  "38": "Agriculture"
+  "39": "Water Rights"
+  "40": "Wildlife Conservation"
+  "41": "Fish"
+  "42": "Forests and Parks"
+  "43": "Property"
+  "44": "Contracts and Obligations"
+  "45": "Partnerships"
+  "46": "Water Resources"
+  "46A": "Water Development and Management"
+  "47": "Corporations"
+  "48": "Insurance"
+  "49": "Utilities"
+  "50": "Banks and Financial Institutions"
+  "51": "Commercial Law"
+  "51A": "Uniform Commercial Code"
+  "52": "Securities"
+  "53": "Contracts"
+  "54": "Consumer Protection"
+  "55": "Aeronautics"
+  "56": "Cemeteries"
+  "57": "Business and Occupations"
+  "58": "Insurance"
+  "60": "Labor and Employment"
+  "61": "Workers Compensation"
+  "62": "Unemployment Compensation"

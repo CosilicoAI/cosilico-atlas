@@ -1,0 +1,54 @@
+# New York - New York Consolidated Laws
+# Spec version: 1.0
+
+jurisdiction: us-ny
+name: New York
+source_type: html
+
+# Official NY Senate legislation site
+base_url: https://www.nysenate.gov
+
+toc_urls:
+  - /legislation/laws/CONSOLIDATED
+
+# Section URLs: /legislation/laws/{CODE}/{SECTION}
+# Examples:
+#   /legislation/laws/TAX/601 (Tax Law Section 601)
+#   /legislation/laws/LAB/193 (Labor Law Section 193)
+section_pattern: /legislation/laws/[A-Z]+/[\dA-Z-]+
+
+crawler_type: html
+
+selectors:
+  content: main, article, body
+  title: h1, title
+
+# Key consolidated laws for tax, welfare, labor, education
+# NY uses abbreviated codes
+codes:
+  "TAX": "Tax Law"
+  "LAB": "Labor Law"
+  "SSL": "Social Services Law"
+  "EDN": "Education Law"
+  "PEN": "Penal Law"
+  "CPL": "Criminal Procedure Law"
+  "DRL": "Domestic Relations Law"
+  "FCA": "Family Court Act"
+  "EXC": "Executive Law"
+  "STF": "State Finance Law"
+  "INS": "Insurance Law"
+  "BNK": "Banking Law"
+  "GBS": "General Business Law"
+  "WKC": "Workers Compensation Law"
+  "PBH": "Public Health Law"
+  "ELD": "Elder Law"
+  "MHY": "Mental Hygiene Law"
+  "SOS": "Social Services Law"
+  "CNS": "Constitution"
+  "VAT": "Vehicle and Traffic Law"
+  "ENV": "Environmental Conservation Law"
+  "ABC": "Alcoholic Beverage Control Law"
+  "AGM": "Agriculture and Markets Law"
+  "RPT": "Real Property Tax Law"
+  "GOB": "General Obligations Law"
+  "CVR": "Civil Rights Law"

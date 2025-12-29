@@ -43,6 +43,8 @@ SECTION_PATTERNS: dict[str, str] = {
     "us-fl": r"/statutes/\d+\.\d+",
     # Nevada: chapters contain all sections, so fetch chapter pages
     "us-nv": r"NRS-[\dA-Z]+\.html",
+    # Delaware: chapter pages contain sections as anchors
+    "us-de": r"/c\d+/index\.html",
     # Default pattern matches common section URL formats
     "_default": r"(?:section|§|sec)[\-_/]?[\d.]+",
 }
@@ -161,7 +163,12 @@ class StateCrawler:
 
         for code_id in self.config.codes:
             if self.config.toc_url_pattern:
-                toc_url = f"{self.config.base_url}{self.config.toc_url_pattern.format(code=code_id)}"
+                # Handle different placeholder names in patterns
+                toc_url = self.config.toc_url_pattern.format(
+                    code=code_id, title=code_id
+                )
+                if not toc_url.startswith("http"):
+                    toc_url = f"{self.config.base_url}{toc_url}"
                 frontier.append((toc_url, 0))
             else:
                 # Fall back to base URL

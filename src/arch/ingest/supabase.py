@@ -215,7 +215,7 @@ class SupabaseIngestor:
         self,
         consolidated_number: str,
         arch_path: Path | None = None,
-        batch_size: int = 100,
+        batch_size: int = 50,
     ) -> int:
         """Ingest a Canadian federal act into the rules table.
 
@@ -381,7 +381,7 @@ class SupabaseIngestor:
         self,
         title_num: int,
         uscode_path: Path | None = None,
-        batch_size: int = 100,
+        batch_size: int = 50,
     ) -> int:
         """Ingest a US Code title into the rules table.
 
@@ -566,7 +566,7 @@ class SupabaseIngestor:
         year: int,
         chapter: int,
         uk_path: Path | None = None,
-        batch_size: int = 100,
+        batch_size: int = 50,
     ) -> int:
         """Ingest a UK Act into the rules table.
 

@@ -1,6 +1,6 @@
-"""Ingest parsed statutes into Supabase rules table.
+"""Ingest parsed statutes into Supabase arch.rules table.
 
-This module pushes parsed statute sections to the PostgreSQL `rules` table
+This module pushes parsed statute sections to the PostgreSQL `arch.rules` table
 via the Supabase REST API.
 
 Usage:
@@ -106,6 +106,7 @@ class SupabaseIngestor:
                             "apikey": self.key,
                             "Authorization": f"Bearer {self.key}",
                             "Content-Type": "application/json",
+                            "Content-Profile": "arch",  # Write to arch schema
                             # Upsert: on conflict with citation_path, update
                             "Prefer": "resolution=merge-duplicates,return=minimal",
                         },

@@ -1869,5 +1869,162 @@ def get_uk(citation: str, as_json: bool):
         )
 
 
+@main.command("sb")
+@click.argument("source_path")
+@click.option("--jurisdiction", "-j", default="us", help="Jurisdiction (us, uk, canada)")
+@click.option("--children", "-c", is_flag=True, help="Include child sections")
+@click.option("--json", "as_json", is_flag=True, help="Output as JSON")
+def sb(source_path: str, jurisdiction: str, children: bool, as_json: bool):
+    """Query statute from Supabase.
+
+    SOURCE_PATH is the path like "usc/26/32" or just "26/32".
+
+    Examples:
+        arch sb 26/32                    # Get 26 USC § 32 (EITC)
+        arch sb 26/24 -c                 # With children
+        arch sb "ita/2007/1" -j uk       # UK ITA 2007
+        arch sb 26/32 --json             # Output as JSON
+    """
+    import json as json_module
+
+    from arch.query import SupabaseQuery
+
+    query = SupabaseQuery()
+
+    if children:
+        section = query.get_section_with_children(source_path, jurisdiction)
+        if not section:
+            console.print(f"[red]Not found:[/red] {source_path} ({jurisdiction})")
+            raise SystemExit(1)
+
+        if as_json:
+            data = {
+                "rule": {
+                    "id": section.rule.id,
+                    "heading": section.rule.heading,
+                    "body": section.rule.body,
+                    "source_path": section.rule.source_path,
+                },
+                "children": [
+                    {"id": c.id, "heading": c.heading, "body": c.body}
+                    for c in section.children
+                ],
+            }
+            console.print_json(json_module.dumps(data, indent=2))
+        else:
+            console.print(
+                Panel(
+                    f"[bold]{section.rule.source_path}[/bold]\n"
+                    f"[dim]Jurisdiction: {section.rule.jurisdiction}[/dim]\n\n"
+                    f"[bold blue]{section.rule.heading or 'Untitled'}[/bold blue]\n\n"
+                    f"{(section.rule.body or '')[:1000]}{'...' if section.rule.body and len(section.rule.body) > 1000 else ''}\n\n"
+                    f"[dim]Children: {len(section.children)} subsections[/dim]",
+                    title=source_path,
+                )
+            )
+            if section.children:
+                table = Table(title="Subsections")
+                table.add_column("ID", style="cyan")
+                table.add_column("Heading", style="green")
+                table.add_column("Body Preview")
+
+                for child in section.children[:10]:
+                    body_preview = (child.body or "")[:60]
+                    if child.body and len(child.body) > 60:
+                        body_preview += "..."
+                    table.add_row(
+                        child.id[:8] + "...",
+                        child.heading or "(no heading)",
+                        body_preview,
+                    )
+
+                if len(section.children) > 10:
+                    table.add_row("...", f"... and {len(section.children) - 10} more", "")
+
+                console.print(table)
+    else:
+        rule = query.get_section(source_path, jurisdiction)
+        if not rule:
+            console.print(f"[red]Not found:[/red] {source_path} ({jurisdiction})")
+            raise SystemExit(1)
+
+        if as_json:
+            data = {
+                "id": rule.id,
+                "heading": rule.heading,
+                "body": rule.body,
+                "source_path": rule.source_path,
+                "jurisdiction": rule.jurisdiction,
+            }
+            console.print_json(json_module.dumps(data, indent=2))
+        else:
+            console.print(
+                Panel(
+                    f"[bold]{rule.source_path}[/bold]\n"
+                    f"[dim]Jurisdiction: {rule.jurisdiction}[/dim]\n\n"
+                    f"[bold blue]{rule.heading or 'Untitled'}[/bold blue]\n\n"
+                    f"{(rule.body or '')[:2000]}{'...' if rule.body and len(rule.body) > 2000 else ''}",
+                    title=source_path,
+                )
+            )
+
+
+@main.command("sb-search")
+@click.argument("query")
+@click.option("--jurisdiction", "-j", help="Filter by jurisdiction (us, uk, canada)")
+@click.option("--limit", "-n", default=10, help="Maximum results")
+def sb_search(query: str, jurisdiction: str | None, limit: int):
+    """Search Supabase rules table.
+
+    Examples:
+        arch sb-search "earned income"
+        arch sb-search "criminal code" -j canada
+        arch sb-search "employment" -j uk -n 20
+    """
+    from arch.query import SupabaseQuery
+
+    q = SupabaseQuery()
+    results = q.search(query, jurisdiction=jurisdiction, limit=limit)
+
+    if not results:
+        console.print(f"[yellow]No results for:[/yellow] {query}")
+        return
+
+    table = Table(title=f"Search: {query}")
+    table.add_column("Jurisdiction", style="cyan")
+    table.add_column("Path", style="green")
+    table.add_column("Heading")
+
+    for r in results:
+        heading = r.heading or "(no heading)"
+        if len(heading) > 40:
+            heading = heading[:40] + "..."
+        table.add_row(r.jurisdiction.upper(), r.source_path or r.id[:16], heading)
+
+    console.print(table)
+
+
+@main.command("sb-stats")
+def sb_stats():
+    """Show Supabase rules table statistics."""
+    from arch.query import SupabaseQuery
+
+    query = SupabaseQuery()
+
+    with console.status("Fetching stats from Supabase..."):
+        stats = query.get_stats()
+
+    console.print()
+    console.print(
+        Panel(
+            f"[bold green]Total Rules:[/bold green] {stats['total']:,}\n\n"
+            f"[bold cyan]US:[/bold cyan] {stats.get('us', 0):,}\n"
+            f"[bold blue]UK:[/bold blue] {stats.get('uk', 0):,}\n"
+            f"[bold yellow]Canada:[/bold yellow] {stats.get('canada', 0):,}",
+            title="Supabase Rules Statistics",
+        )
+    )
+
+
 if __name__ == "__main__":
     main()

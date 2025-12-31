@@ -80,7 +80,7 @@ WV_CHAPTERS: dict[int, str] = {
     50: "Magistrate Courts",
     51: "Courts and Their Officers",
     53: "Extraordinary Remedies",
-    55: "Actions, Suits and Arbitration;டான்ம்Judicial Sale",
+    55: "Actions, Suits and Arbitration; Judicial Sale",
     56: "Pleading and Practice",
     57: "Evidence and Witnesses",
     58: "Appeals and Supersedeas",

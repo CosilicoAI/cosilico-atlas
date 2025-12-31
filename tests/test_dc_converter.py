@@ -84,11 +84,11 @@ SAMPLE_TITLE_INDEX_XML = """<?xml version="1.0" encoding="UTF-8"?>
   <prefix>Title</prefix>
   <num>47</num>
   <heading>Taxation, Licensing, Permits, Assessments, and Fees.</heading>
-  <xi:include href="sections/47-101.xml"/>
-  <xi:include href="sections/47-102.xml"/>
-  <xi:include href="sections/47-1801.01.xml"/>
-  <xi:include href="sections/47-1801.04.xml"/>
-  <xi:include href="sections/47-1806.01.xml"/>
+  <xi:include href="./sections/47-101.xml"/>
+  <xi:include href="./sections/47-102.xml"/>
+  <xi:include href="./sections/47-1801.01.xml"/>
+  <xi:include href="./sections/47-1801.04.xml"/>
+  <xi:include href="./sections/47-1806.01.xml"/>
 </container>
 """
 

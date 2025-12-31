@@ -218,8 +218,14 @@ def parse_section(xml_str: str) -> UKSection:
     # Use namespaces
     ns = NAMESPACES
 
-    # Get DocumentURI
-    doc_uri = root.get("DocumentURI", "")
+    # Get DocumentURI - prefer P1 element's URI (has section) over root (Act-level)
+    # Real API responses have DocumentURI on P1, but test fixtures may only have it on root
+    p1 = root.find(".//leg:P1", ns)
+    doc_uri = ""
+    if p1 is not None:
+        doc_uri = p1.get("DocumentURI", "")
+    if not doc_uri:
+        doc_uri = root.get("DocumentURI", "")
 
     # Parse citation from URI
     citation = _parse_citation_from_uri(doc_uri)

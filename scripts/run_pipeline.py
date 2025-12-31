@@ -259,10 +259,21 @@ class StatePipeline:
             self.stats['errors'] += 1
             return False
 
-    def _get_chapter_url(self, chapter) -> str:
+    def _get_chapter_url(self, chapter, title: int | None = None) -> str:
         """Get the URL for a chapter."""
         if hasattr(self.converter, '_build_chapter_url'):
-            return self.converter._build_chapter_url(chapter)
+            # Check how many arguments the method takes
+            import inspect
+            sig = inspect.signature(self.converter._build_chapter_url)
+            params = list(sig.parameters.keys())
+            if len(params) == 2 and title is not None:
+                # AK-style: _build_chapter_url(title, chapter)
+                return self.converter._build_chapter_url(title, chapter)
+            elif len(params) == 1:
+                return self.converter._build_chapter_url(chapter)
+            else:
+                # Fall back to just chapter if title not provided
+                return self.converter._build_chapter_url(chapter) if len(params) == 1 else f"https://{self.state}.gov/statute/chapter/{chapter}"
         elif hasattr(self.converter, 'base_url'):
             return f"{self.converter.base_url}/chapter/{chapter}"
         else:
@@ -303,30 +314,56 @@ class StatePipeline:
         import importlib
         mod = importlib.import_module(module)
 
+        # chapters will be list of (chapter, title) tuples for states like AK that need both
+        # or just (chapter, None) for simpler states
         chapters = []
-        for attr in ['TAX_CHAPTERS', 'WELFARE_CHAPTERS', f'{self.state.upper()}_TAX_CHAPTERS', f'{self.state.upper()}_WELFARE_CHAPTERS']:
-            if hasattr(mod, attr):
-                chapters.extend(getattr(mod, attr).keys())
 
-        if not chapters:
-            print("No chapters found, trying title-based approach...")
-            for attr in ['TITLES', f'{self.state.upper()}_TITLES', 'TAX_TITLES']:
+        # Check for state-specific chapter dicts that map to titles/codes
+        if self.state == 'ak':
+            # Alaska uses separate dicts per title
+            if hasattr(mod, 'AK_TAX_CHAPTERS'):
+                for ch in getattr(mod, 'AK_TAX_CHAPTERS').keys():
+                    chapters.append((ch, 43))  # Title 43 = Revenue and Taxation
+            if hasattr(mod, 'AK_WELFARE_CHAPTERS'):
+                for ch in getattr(mod, 'AK_WELFARE_CHAPTERS').keys():
+                    chapters.append((ch, 47))  # Title 47 = Welfare
+        elif self.state == 'tx':
+            # Texas uses code + chapter: TX_TAX_CHAPTERS are Tax Code, TX_WELFARE_CHAPTERS are HR Code
+            if hasattr(mod, 'TX_TAX_CHAPTERS'):
+                for ch in getattr(mod, 'TX_TAX_CHAPTERS').keys():
+                    chapters.append((ch, 'TX'))  # TX = Tax Code
+            if hasattr(mod, 'TX_WELFARE_CHAPTERS'):
+                for ch in getattr(mod, 'TX_WELFARE_CHAPTERS').keys():
+                    chapters.append((ch, 'HR'))  # HR = Human Resources Code
+        else:
+            # Standard pattern for other states
+            for attr in ['TAX_CHAPTERS', 'WELFARE_CHAPTERS', f'{self.state.upper()}_TAX_CHAPTERS', f'{self.state.upper()}_WELFARE_CHAPTERS']:
                 if hasattr(mod, attr):
-                    chapters.extend(str(t) for t in getattr(mod, attr).keys())
+                    for ch in getattr(mod, attr).keys():
+                        chapters.append((ch, None))
+
+            if not chapters:
+                print("No chapters found, trying title-based approach...")
+                for attr in ['TITLES', f'{self.state.upper()}_TITLES', 'TAX_TITLES']:
+                    if hasattr(mod, attr):
+                        for t in getattr(mod, attr).keys():
+                            chapters.append((str(t), None))
 
         print(f"Found {len(chapters)} chapters/titles to process")
 
         # Process each chapter
-        for chapter in chapters:
-            print(f"\n  Chapter {chapter}...", end=" ", flush=True)
+        for chapter_tuple in chapters:
+            chapter_num, title_or_code = chapter_tuple
+            display_name = f"{title_or_code}-{chapter_num}" if title_or_code else str(chapter_num)
+            print(f"\n  Chapter {display_name}...", end=" ", flush=True)
 
             try:
                 # 1. Get chapter URL and fetch raw HTML
-                url = self._get_chapter_url(chapter)
+                url = self._get_chapter_url(chapter_num, title_or_code)
                 raw_html = self._fetch_raw_html(url)
 
                 # 2. Archive raw HTML to R2 arch bucket (chapter level)
-                safe_chapter = str(chapter).replace('/', '-').replace('.', '-')
+                safe_chapter = display_name.replace('/', '-').replace('.', '-')
                 raw_key = f"us/statutes/states/{self.state}/raw/chapter-{safe_chapter}.html"
 
                 if not self.dry_run:
@@ -336,15 +373,21 @@ class StatePipeline:
                         metadata={
                             'source-url': url[:256],
                             'state': self.state,
-                            'chapter': str(chapter),
+                            'chapter': display_name,
                             'fetched-at': datetime.now(timezone.utc).isoformat(),
                         }
                     )
                 self.stats['raw_uploaded'] += 1
 
-                # 3. Parse into sections
-                if hasattr(self.converter, 'fetch_chapter'):
-                    sections = self.converter.fetch_chapter(chapter)
+                # 3. Parse into sections - AK/TX use iter_chapter(title/code, chapter)
+                if self.state == 'ak' and title_or_code:
+                    # Alaska converter uses iter_chapter(title, chapter)
+                    sections = list(self.converter.iter_chapter(title_or_code, chapter_num))
+                elif self.state == 'tx' and title_or_code:
+                    # Texas converter uses iter_chapter(code, chapter) not fetch_chapter
+                    sections = list(self.converter.iter_chapter(title_or_code, chapter_num))
+                elif hasattr(self.converter, 'fetch_chapter'):
+                    sections = self.converter.fetch_chapter(chapter_num)
                     if isinstance(sections, dict):
                         sections = list(sections.values())
                 else:
@@ -378,7 +421,7 @@ class StatePipeline:
                                     'raw-key': raw_key,
                                     'state': self.state,
                                     'section-id': section_id,
-                                    'chapter': str(chapter),
+                                    'chapter': display_name,
                                 }
                             )
                         self.stats['akn_uploaded'] += 1

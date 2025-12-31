@@ -232,6 +232,12 @@ class StatePipeline:
             if hasattr(self.converter, "iter_chapter"):
                 sections = list(self.converter.iter_chapter(title_or_code, chapter))
 
+        elif hasattr(self.converter, "iter_chapter"):
+            # FL and other states: iter_chapter(chapter) with single arg
+            # Convert chapter to int if it's a string number
+            ch = int(chapter) if isinstance(chapter, str) and chapter.isdigit() else chapter
+            sections = list(self.converter.iter_chapter(ch))
+
         elif hasattr(self.converter, "fetch_chapter"):
             result = self.converter.fetch_chapter(chapter)
             if isinstance(result, dict):

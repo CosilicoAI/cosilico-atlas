@@ -66,6 +66,7 @@ verify = [
 [project.scripts]
 arch = "arch.cli:main"
 arch-build = "arch.scripts.build_archive:main"
+arch-pipeline = "arch.pipeline.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/CosilicoAI/arch"

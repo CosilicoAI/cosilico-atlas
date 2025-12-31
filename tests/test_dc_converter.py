@@ -458,7 +458,9 @@ class TestDCConverterIntegration:
 
         # Title 47 should have many sections
         assert len(sections) > 10
-        assert all(s.startswith("47-") for s in sections)
+        # Most sections should start with "47-" (some repealed sections have brackets)
+        valid_sections = [s for s in sections if s.startswith("47-") or s.startswith("[47-")]
+        assert len(valid_sections) == len(sections)
 
     @pytest.mark.slow
     @pytest.mark.integration

@@ -371,7 +371,13 @@ class TestWVConverterFetching:
     @patch.object(WVConverter, "_get")
     def test_fetch_section_not_found(self, mock_get):
         """Handle section not found error."""
-        mock_get.return_value = "<html><body>Section cannot be found</body></html>"
+        # Return a realistic error page with "page not found" indicator
+        mock_get.return_value = """<html>
+        <head><title>Page Not Found - West Virginia Code</title></head>
+        <body>
+        <div class="error">The requested page was not found.</div>
+        <p>The section you are looking for does not exist or has been moved.</p>
+        </body></html>"""
 
         converter = WVConverter()
         with pytest.raises(WVConverterError) as exc_info:

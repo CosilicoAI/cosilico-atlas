@@ -548,11 +548,13 @@ class DCConverter:
             root = ET.fromstring(xml_content)
 
             # Look for XInclude references to sections
-            # Pattern: <xi:include href="sections/47-101.xml"/>
+            # Pattern: <xi:include href="./sections/47-101.xml"/> or href="sections/47-101.xml"
             for include in root.iter("{http://www.w3.org/2001/XInclude}include"):
                 href = include.get("href", "")
-                if href.startswith("sections/") and href.endswith(".xml"):
-                    section_num = href[9:-4]  # Remove "sections/" and ".xml"
+                # Handle both "./sections/" and "sections/" prefixes
+                if "/sections/" in href and href.endswith(".xml"):
+                    # Extract section number from path like "./sections/47-101.xml"
+                    section_num = href.split("/sections/")[1][:-4]  # Remove ".xml"
                     section_numbers.append(section_num)
 
         except ET.ParseError:

@@ -6,7 +6,18 @@ from arch.storage.sqlite import SQLiteStorage
 # PostgreSQL is optional - only import if installed
 try:
     from arch.storage.postgres import PostgresStorage
-
-    __all__ = ["StorageBackend", "SQLiteStorage", "PostgresStorage"]
 except ImportError:
-    __all__ = ["StorageBackend", "SQLiteStorage"]
+    PostgresStorage = None  # type: ignore
+
+# R2 is optional - only import if boto3 is installed
+try:
+    from arch.storage.r2 import R2Storage, get_r2
+except ImportError:
+    R2Storage = None  # type: ignore
+    get_r2 = None  # type: ignore
+
+__all__ = ["StorageBackend", "SQLiteStorage"]
+if PostgresStorage is not None:
+    __all__.append("PostgresStorage")
+if R2Storage is not None:
+    __all__.extend(["R2Storage", "get_r2"])

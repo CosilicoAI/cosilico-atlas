@@ -41,7 +41,7 @@ from arch.models import Citation, Section, Subsection
 BASE_URL = "https://nmonesource.com/nmos/nmsa/en"
 
 # Chapter registry for reference
-NM_CHAPTERS: dict[str, str] = {
+NM_CHAPTERS: dict[int | str, str] = {
     1: "General Provisions",
     2: "Accountability in Government",
     3: "Agricultural Code",

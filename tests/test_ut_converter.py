@@ -10,6 +10,7 @@ from unittest.mock import patch
 import pytest
 
 from arch.converters.us_states.ut import (
+    UT_TITLES,
     UT_TAX_CHAPTERS,
     UT_WELFARE_CHAPTERS,
     UT_ALPHA_TITLES,
@@ -270,6 +271,11 @@ SAMPLE_35A_SECTION_HTML = """<html>
 
 class TestUTChaptersRegistry:
     """Test Utah chapter registries."""
+
+    def test_title_59_in_titles(self):
+        """Title 59 (Revenue and Taxation) is in titles."""
+        assert 59 in UT_TITLES
+        assert "Revenue" in UT_TITLES[59]
 
     def test_chapter_59_10_in_tax_chapters(self):
         """Chapter 59-10 (Individual Income Tax) is in tax chapters."""

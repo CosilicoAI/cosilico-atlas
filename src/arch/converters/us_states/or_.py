@@ -209,13 +209,16 @@ class ORConverter:
         current_text_parts: list[str] = []
 
         # Section heading pattern: "316.037 Imposition and rate of tax."
-        # The section number and title are in bold
+        # The section number and title are in bold. The title may be on a new line.
+        # Uses re.DOTALL to match across newlines
         section_pattern = re.compile(
-            rf"^\s*({chapter}\.\d{{3}}[A-Za-z]?)\s+(.+?)\.?\s*$"
+            rf"^\s*({chapter}\.\d{{3}}[A-Za-z]?)\s+(.+?)\.?\s*$",
+            re.DOTALL
         )
         # Repealed section pattern: "316.035 [1953 c.304 ...]"
         repealed_pattern = re.compile(
-            rf"^\s*({chapter}\.\d{{3}}[A-Za-z]?)\s*(\[.+\])\s*$"
+            rf"^\s*({chapter}\.\d{{3}}[A-Za-z]?)\s*(\[.+\])\s*$",
+            re.DOTALL
         )
 
         for p in paragraphs:
@@ -259,7 +262,8 @@ class ORConverter:
                     else:
                         # Active section
                         section_num = match.group(1)
-                        section_title = match.group(2)
+                        # Clean up title - replace newlines and multiple spaces with single space
+                        section_title = re.sub(r"\s+", " ", match.group(2)).strip()
                         current_section = {
                             "section_number": section_num,
                             "section_title": section_title,

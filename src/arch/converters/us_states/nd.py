@@ -39,7 +39,7 @@ from arch.models import Citation, Section, Subsection
 BASE_URL = "https://ndlegis.gov/cencode"
 
 # Title mapping for reference
-ND_TITLES: dict[str, str] = {
+ND_TITLES: dict[int, str] = {
     1: "General Provisions",
     2: "Aeronautics",
     3: "Agency",

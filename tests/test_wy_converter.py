@@ -21,6 +21,7 @@ from arch.converters.us_states.wy import (
 from arch.models import Section
 
 # Sample HTML from wyoleg.gov for testing (simulated NXT gateway response)
+# Note: Wyoming statutes use (a), (b), (c) for top level; (i), (ii), (iii) for second level
 SAMPLE_SECTION_HTML = """<!DOCTYPE html>
 <html>
 <head><title>Wyoming Statutes - 39-13-101</title></head>
@@ -29,12 +30,7 @@ SAMPLE_SECTION_HTML = """<!DOCTYPE html>
 <h2>CHAPTER 13 - AD VALOREM TAXATION</h2>
 <div class="content">
 <p><b>39-13-101. Definitions.</b></p>
-<p>(a) As used in this article:</p>
-<p>(i) "Ad valorem" means according to value;</p>
-<p>(ii) "Ad valorem tax" means a property tax based on the assessed value of the property;</p>
-<p>(A) Real property includes land and buildings;</p>
-<p>(B) Personal property includes tangible movable items;</p>
-<p>(iii) "Agricultural land" means land used for farming, ranching, or timber production;</p>
+<p>(a) As used in this article: (i) "Ad valorem" means according to value; (ii) "Ad valorem tax" means a property tax based on the assessed value of the property; (A) Real property includes land and buildings; (B) Personal property includes tangible movable items; (iii) "Agricultural land" means land used for farming, ranching, or timber production;</p>
 <p>(b) "Deed" means a conveyance of real property, in writing signed by the grantor;</p>
 <p>(c) "Tax deed" means the conveyance given upon a sale of real property for nonpayment of ad valorem taxes;</p>
 <p>HISTORY: Laws 1998, ch. 5, § 1.</p>

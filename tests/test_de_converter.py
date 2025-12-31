@@ -273,7 +273,7 @@ class TestDEConverterParsing:
         assert section.section_title == "Meaning of terms"
         assert "Delaware Code" in section.title_name
         assert section.uslm_id == "de/30/11/1101"
-        assert section.source_url == "https://example.com"
+        assert section.source_url == "https://example.com#1101"
 
 
 class TestDEConverterFetching:

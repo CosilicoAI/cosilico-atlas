@@ -300,20 +300,19 @@ class ILConverter:
 
         URL Pattern observed:
         - 35 ILCS 5/201 -> /Documents/legislation/ilcs/documents/003500050K201.htm
+        - 35 ILCS 105/1 -> /Documents/legislation/ilcs/documents/003501050K1.htm
+        - 35 ILCS 120/1 -> /Documents/legislation/ilcs/documents/003501200K1.htm
         - Chapter: 4 digits (0035 for 35)
-        - Act: 5 digits (00050 for 5)
+        - Act: 0 + 3-digit act number + 0 = 5 digits (00050 for 5, 01050 for 105)
         - K + section number
         """
-        # Format: CCCCAAAAAK{section}.htm
-        # CCCC = chapter padded to 4 digits
-        # AAAAA = act padded to 5 digits
-        # K = literal
-        # section = section number (may include dashes)
+        # Format: {chapter:04d}0{act:03d}0K{section}.htm
+        # Example: 35 ILCS 5/201 -> 0035 + 0 + 005 + 0 + K + 201 = 003500050K201
         chapter_padded = f"{chapter:04d}"
-        act_padded = f"{act:05d}"
+        act_formatted = f"0{act:03d}0"
 
         # Section might have dashes, which get included as-is
-        doc_name = f"{chapter_padded}{act_padded}K{section}"
+        doc_name = f"{chapter_padded}{act_formatted}K{section}"
 
         return f"{BASE_URL}/Documents/legislation/ilcs/documents/{doc_name}.htm"
 

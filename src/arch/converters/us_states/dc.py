@@ -51,8 +51,10 @@ BASE_URL = "https://raw.githubusercontent.com/dccouncil/law-xml-codified/master"
 WEB_URL = "https://code.dccouncil.gov"
 
 # XML namespaces used in DC law XML
+# Default namespace for dc-library elements
+DC_NS = "https://code.dccouncil.us/schemas/dc-library"
 NS = {
-    "dc": "https://code.dccouncil.us/schemas/dc-library",
+    "dc": DC_NS,
     "codified": "https://code.dccouncil.us/schemas/codified",
     "codify": "https://code.dccouncil.us/schemas/codify",
     "xi": "http://www.w3.org/2001/XInclude",

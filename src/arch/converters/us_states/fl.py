@@ -314,31 +314,47 @@ class FLConverter:
             title_roman = "XXX"
             title_name = "Social Welfare"
 
-        # Get body content - try various containers
-        content_elem = (
-            soup.find("div", class_="Statute")
-            or soup.find("div", id="statute")
-            or soup.find("body")
-        )
+        # Get body content - the actual statute content is in div.Section
+        # The page includes multiple nested HTML documents, so we need to find the Section div
+        content_elem = soup.find("div", class_="Section")
 
         if content_elem:
             # Remove navigation and scripts
             for elem in content_elem.find_all(["nav", "script", "style", "header", "footer"]):
                 elem.decompose()
-            text = content_elem.get_text(separator="\n", strip=True)
+
+            # Extract section title from Catchline
+            catchline = content_elem.find("span", class_="Catchline")
+            if catchline:
+                catchline_text = catchline.find("span", class_="CatchlineText")
+                if catchline_text:
+                    section_title = catchline_text.get_text(strip=True)
+
+            # Get just the text content from SectionBody
+            section_body = content_elem.find("span", class_="SectionBody")
+            if section_body:
+                text = self._extract_section_text(section_body)
+                subsections = self._parse_subsections_from_html(section_body)
+            else:
+                text = content_elem.get_text(separator="\n", strip=True)
+                subsections = self._parse_subsections(text)
+
             html_content = str(content_elem)
         else:
+            # Fallback to original behavior for other formats
             text = soup.get_text(separator="\n", strip=True)
             html_content = html
+            subsections = self._parse_subsections(text)
 
-        # Extract history note
+        # Extract history note (often in a History span or at the end)
         history = None
-        history_match = re.search(r"History\.[-—](.+?)(?:\n|$)", text, re.DOTALL)
-        if history_match:
-            history = history_match.group(1).strip()[:1000]  # Limit length
-
-        # Parse subsections
-        subsections = self._parse_subsections(text)
+        history_elem = soup.find("span", class_="History") or soup.find("p", class_="History")
+        if history_elem:
+            history = history_elem.get_text(strip=True)[:1000]
+        else:
+            history_match = re.search(r"History\.[-—](.+?)(?:\n|$)", text, re.DOTALL)
+            if history_match:
+                history = history_match.group(1).strip()[:1000]
 
         return ParsedFLSection(
             section_number=section_number,
@@ -352,6 +368,77 @@ class FLConverter:
             subsections=subsections,
             history=history,
             source_url=url,
+        )
+
+    def _extract_section_text(self, section_body) -> str:
+        """Extract text from section body, handling the intro text before subsections."""
+        # Get intro text (text before first subsection)
+        intro_text = ""
+        intro_elem = section_body.find("span", class_="Text")
+        if intro_elem:
+            intro_text = intro_elem.get_text(strip=True)
+
+        return intro_text
+
+    def _parse_subsections_from_html(self, section_body) -> list[ParsedFLSubsection]:
+        """Parse subsections from the structured HTML with CSS classes.
+
+        The HTML uses classes like Subsection, Paragraph, SubParagraph, etc.
+        """
+        subsections = []
+
+        # Find top-level subsections (div.Subsection)
+        for subsec_div in section_body.find_all("div", class_="Subsection", recursive=False):
+            subsec = self._parse_subsection_div(subsec_div, 0)
+            if subsec:
+                subsections.append(subsec)
+
+        return subsections
+
+    def _parse_subsection_div(self, div, level: int) -> ParsedFLSubsection | None:
+        """Parse a single subsection div recursively."""
+        # Get the number/identifier
+        num_elem = div.find("span", class_="Number")
+        if not num_elem:
+            return None
+
+        num_text = num_elem.get_text(strip=True)
+        # Extract identifier from patterns like "(1)", "(a)", "1.", "a."
+        match = re.match(r"\(?([a-zA-Z0-9]+)[\).\s]", num_text)
+        if not match:
+            return None
+
+        identifier = match.group(1)
+
+        # Get the text content
+        text_elem = div.find("span", class_="Text")
+        text = text_elem.get_text(strip=True) if text_elem else ""
+
+        # Also check for direct content in content spans
+        if not text:
+            content_elem = div.find("span", class_="Content")
+            if content_elem:
+                text = content_elem.get_text(strip=True)
+
+        # Parse children based on level
+        children = []
+        child_classes = {
+            0: "Paragraph",
+            1: "SubParagraph",
+            2: "SubSubParagraph",
+            3: "SubSubSubParagraph",
+        }
+
+        child_class = child_classes.get(level, "SubSubSubParagraph")
+        for child_div in div.find_all("div", class_=child_class, recursive=False):
+            child = self._parse_subsection_div(child_div, level + 1)
+            if child:
+                children.append(child)
+
+        return ParsedFLSubsection(
+            identifier=identifier,
+            text=text[:2000],  # Limit text size
+            children=children,
         )
 
     def _parse_subsections(self, text: str) -> list[ParsedFLSubsection]:

@@ -620,15 +620,16 @@ class COConverter:
             List of section numbers (e.g., ["39-22-101", "39-22-102", ...])
 
         Note:
-            This fetches the title page and parses links to find sections
-            in the specified article.
+            This fetches the article page and parses links to find sections.
+            The URL pattern is: crs_title_39_article_22
         """
-        url = self._build_title_url(title)
+        # Use the article-specific URL
+        url = f"{BASE_URL}/crs_title_{title}_article_{article}"
         html = self._get(url)
         soup = BeautifulSoup(html, "html.parser")
 
         section_numbers = []
-        # Pattern for section links: crs_39-22-104
+        # Pattern for section links: crs_39-22-104 or crs_39-22-104.5
         pattern = re.compile(rf"crs_{title}-{article}-(\d+(?:\.\d+)?)")
 
         for link in soup.find_all("a", href=True):
